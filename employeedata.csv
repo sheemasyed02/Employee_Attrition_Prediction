@@ -1596,4 +1596,4 @@ Age,Attrition,BusinessTravel,DailyRate,Department,DistanceFromHome,Education,Edu
 45,No,Travel_Rarely,1000,Sales,9,4,Marketing,1,1296,3,Female,71,4,3,Sales Executive,3,Single,8200,15400,4,Y,No,21,4,3,80,2,22,3,3,16,11,7,13
 31,Yes,Travel_Frequently,680,Research & Development,16,3,Life Sciences,1,1297,2,Male,46,3,2,Research Scientist,2,Married,4400,10000,2,Y,No,14,3,2,80,1,8,2,2,5,3,1,4
 38,No,Non-Travel,840,Sales,12,3,Technical Degree,1,1298,4,Female,55,3,2,Sales Executive,4,Single,6800,13600,2,Y,Yes,17,3,4,80,2,15,3,2,11,7,4,9
-26,No,Travel_Rarely,560,Human Resources,26,1,Human Resources,1,1299,1,Male,34,1,1,Human Resources,1,Married,2800,7200,0,Y,No,12,3,1,80,0,3,1,1,2,1,0,1
+26,No,Travel_Rarely,560,Human Resources,26,1,Human Resources,1,1299,1,Male,34,1,1,Human Resources,1,Married,2800,7200,0,Y,No,17,3,4,80,2,15,3,2,11,7,4,9
