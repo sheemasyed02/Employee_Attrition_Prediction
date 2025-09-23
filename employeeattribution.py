@@ -18,7 +18,6 @@ import os
 st.set_page_config(page_title="Employee Attrition Analysis", layout="wide")
 
 def load_data():
-    # Get the absolute path to the script's directory
     base_path = os.path.dirname(os.path.abspath(__file__))
     # Construct the file path relative to the script
     file_path = os.path.join(base_path, 'employeedata.csv')
@@ -574,4 +573,5 @@ def main():
         show_prediction_interface(trained_models)
 
 if __name__ == "__main__":
+
     main()
