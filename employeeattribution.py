@@ -13,7 +13,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-
 # Page config
 st.set_page_config(page_title="Employee Attrition Analysis", layout="wide")
 
@@ -575,3 +574,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
