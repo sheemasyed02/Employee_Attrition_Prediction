@@ -44,6 +44,7 @@ st.markdown("""
         border: 1px solid #ddd;
         text-align: center;
         margin-bottom: 10px;
+        color: #2c3e50;
     }
     
     .section-box {
@@ -61,6 +62,7 @@ st.markdown("""
         border-radius: 5px;
         border: 1px solid #bee5eb;
         margin: 10px 0;
+        color: #2c3e50;
     }
     
     .success-box {
@@ -87,6 +89,7 @@ st.markdown("""
         border-radius: 5px;
         border: 1px solid #ddd;
         margin: 10px 0;
+        color: #2c3e50;
     }
 </style>
 """, unsafe_allow_html=True)
