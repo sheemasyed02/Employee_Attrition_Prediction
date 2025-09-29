@@ -23,99 +23,134 @@ st.set_page_config(
 # Custom CSS for professional styling
 st.markdown("""
 <style>
-    /* Professional purple theme with soft backgrounds */
-    @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+    /* Clean, professional design with standard colors */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
     .main {
-        padding: 1.5rem;
-        font-family: 'Source Sans Pro', sans-serif;
-        background-color: #fafafa;
+        padding: 1rem;
+        font-family: 'Inter', sans-serif;
+        background-color: #ffffff;
     }
     
     /* Main header */
     .main-header {
-        background: linear-gradient(145deg, #6b46c1, #8b5cf6);
-        padding: 2.5rem 2rem;
-        border-radius: 16px;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        padding: 2rem;
+        border-radius: 12px;
         margin-bottom: 2rem;
         color: white;
         text-align: center;
-        box-shadow: 0 8px 32px rgba(107, 70, 193, 0.2);
+        box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15);
     }
     
     .main-header h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
         font-weight: 600;
         margin: 0;
-        letter-spacing: -0.02em;
     }
     
     .main-header p {
-        font-size: 1.1rem;
-        font-weight: 300;
-        margin: 0.8rem 0 0 0;
+        font-size: 1rem;
+        margin: 0.5rem 0 0 0;
         opacity: 0.9;
+        font-weight: 400;
     }
     
-    /* Metric cards with natural shadows */
-    .metric-card {
-        background: white;
-        padding: 1.8rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 24px rgba(139, 92, 246, 0.08);
-        border: 1px solid rgba(139, 92, 246, 0.1);
-        margin-bottom: 1.5rem;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .metric-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
-    }
-    
-    /* Section headers with subtle styling */
+    /* Section headers */
     .section-header {
-        background: rgba(248, 250, 252, 0.8);
-        padding: 1.2rem 1.8rem;
-        border-radius: 12px;
-        border-left: 4px solid #8b5cf6;
-        margin: 1.8rem 0 1.2rem 0;
-        backdrop-filter: blur(10px);
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        border-left: 4px solid #2563eb;
+        margin: 1.5rem 0 1rem 0;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
     }
     
     .section-header h3 {
         margin: 0;
-        color: #374151;
+        color: #1e293b;
+        font-size: 1.25rem;
         font-weight: 600;
-        font-size: 1.3rem;
+    }
+    
+    /* Metric cards */
+    .metric-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        text-align: center;
+        margin-bottom: 1rem;
+        transition: box-shadow 0.2s ease;
+    }
+    
+    .metric-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    
+    .metric-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2563eb;
+        margin: 0;
+        line-height: 1;
+    }
+    
+    .metric-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin: 0.5rem 0 0 0;
+        font-weight: 500;
     }
     
     /* Information boxes */
     .info-box {
-        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-        border: 1px solid #d1d5db;
-        border-radius: 10px;
-        padding: 1.2rem;
+        background: #f8fafc;
+        padding: 1.25rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
         margin: 1rem 0;
         color: #374151;
     }
     
+    .info-box h4 {
+        margin: 0 0 0.75rem 0;
+        color: #1f2937;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
     .warning-box {
-        background: linear-gradient(135deg, #fef3c7, #fde68a);
-        border: 1px solid #f59e0b;
-        border-radius: 10px;
-        padding: 1.2rem;
+        background: #fffbeb;
+        padding: 1.25rem;
+        border-radius: 8px;
+        border: 1px solid #fde68a;
         margin: 1rem 0;
-        color: #92400e;
+        color: #d97706;
+    }
+    
+    .warning-box h4 {
+        margin: 0 0 0.75rem 0;
+        color: #b45309;
+        font-size: 1rem;
+        font-weight: 600;
     }
     
     .success-box {
-        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-        border: 1px solid #22c55e;
-        border-radius: 10px;
-        padding: 1.2rem;
+        background: #f0fdf4;
+        padding: 1.25rem;
+        border-radius: 8px;
+        border: 1px solid #bbf7d0;
         margin: 1rem 0;
         color: #166534;
+    }
+    
+    .success-box h4 {
+        margin: 0 0 0.75rem 0;
+        color: #15803d;
+        font-size: 1rem;
+        font-weight: 600;
     }
     
     /* Sidebar styling */
@@ -128,110 +163,83 @@ st.markdown("""
         box-shadow: 0 2px 12px rgba(139, 92, 246, 0.06);
     }
     
-    /* Professional button styling */
+    /* Button styling */
     div.stButton > button {
-        background: linear-gradient(135deg, #8b5cf6, #6b46c1);
+        background: #2563eb;
         color: white;
         border: none;
-        border-radius: 8px;
-        padding: 0.7rem 1.8rem;
-        font-weight: 600;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
-        font-family: 'Source Sans Pro', sans-serif;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+        font-family: 'Inter', sans-serif;
     }
     
     div.stButton > button:hover {
-        background: linear-gradient(135deg, #7c3aed, #5b21b6);
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+        background: #1d4ed8;
     }
     
     /* Form controls */
     .stSelectbox > div > div {
-        border: 2px solid #e5e7eb;
-        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
         transition: border-color 0.2s ease;
     }
     
     .stSelectbox > div > div:focus-within {
-        border-color: #8b5cf6;
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
     
     /* Chart styling */
     .plotly-chart {
-        border-radius: 10px;
+        border-radius: 8px;
         overflow: hidden;
         margin: 1rem 0;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* DataFrame styling */
+    .dataframe {
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+    }
+    
+    /* Chart containers */
+    .js-plotly-plot {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    /* Navigation styling */
+    .stSelectbox label {
+        font-weight: 500;
+        color: #374151;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background-color: #f9fafb;
+    }
+    
+    /* Typography improvements */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Inter', sans-serif;
+        color: #1f2937;
+        font-weight: 600;
+    }
+    
+    p, div, span, li {
+        font-family: 'Inter', sans-serif;
+        color: #4b5563;
+        line-height: 1.5;
     }
     
     /* Hide Streamlit branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
-    /* Typography improvements */
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Source Sans Pro', sans-serif;
-        color: #374151;
-        font-weight: 600;
-    }
-    
-    p, div, span, li {
-        font-family: 'Source Sans Pro', sans-serif;
-        color: #4b5563;
-    }
-    
-    /* Subtle animations */
-    .metric-card, .section-header, .info-box {
-        animation: slideIn 0.4s ease-out;
-    }
-    
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(15px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .main-header {
-            padding: 2rem 1.5rem;
-        }
-        
-        .main-header h1 {
-            font-size: 1.8rem;
-        }
-        
-        .metric-card {
-            padding: 1.4rem;
-        }
-    }
-    
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: #f1f5f9;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
+    .stDeployButton {display:none;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -479,10 +487,10 @@ def show_overview_page(df):
         for value in attrition_counts.index:
             if value == 'No':
                 labels.append('Retained Employees')
-                colors.append('#8b5cf6')
+                colors.append('#2563eb')  # Professional blue
             else:  # 'Yes'
                 labels.append('Left Company')
-                colors.append('#f87171')
+                colors.append('#ef4444')  # Professional red
         
         fig = px.pie(
             values=attrition_counts.values, 
@@ -523,7 +531,7 @@ def show_overview_page(df):
             dept_attrition, 
             barmode='group', 
             title='Employee Distribution by Department',
-            color_discrete_sequence=['#8b5cf6', '#f87171'],
+            color_discrete_sequence=['#2563eb', '#ef4444'],
             labels={'value': 'Number of Employees', 'index': 'Department'}
         )
         
