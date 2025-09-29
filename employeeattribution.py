@@ -13,8 +13,98 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-# Page configg
-st.set_page_config(page_title="Employee Attrition Analysis", layout="wide")
+# Page configuration
+st.set_page_config(
+    page_title="Workforce Analytics Dashboard", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Custom CSS for professional styling
+st.markdown("""
+<style>
+    .main-header {
+        background: linear-gradient(90deg, #1f4e79 0%, #2c5aa0 100%);
+        padding: 2rem 1rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+    }
+    
+    .metric-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-left: 4px solid #2c5aa0;
+        margin-bottom: 1rem;
+    }
+    
+    .section-header {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #2c5aa0;
+        margin: 1rem 0;
+    }
+    
+    .sidebar-content {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    .info-box {
+        background: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .warning-box {
+        background: #fff3e0;
+        border: 1px solid #ff9800;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .success-box {
+        background: #e8f5e8;
+        border: 1px solid #4caf50;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    div.stButton > button {
+        background: linear-gradient(90deg, #2c5aa0 0%, #1f4e79 100%);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 0.5rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    div.stButton > button:hover {
+        background: linear-gradient(90deg, #1f4e79 0%, #2c5aa0 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .stSelectbox > div > div {
+        border-radius: 5px;
+    }
+    
+    .stSlider > div > div {
+        background: linear-gradient(90deg, #2c5aa0 0%, #1f4e79 100%);
+    }
+</style>
+""", unsafe_allow_html=True)
 
 def load_data():
     base_path = os.path.dirname(os.path.abspath(__file__))
@@ -174,109 +264,583 @@ def load_models():
     return trained_models
     
 def show_overview_page(df):
-    st.header("Dataset Overview")
+    # Main header
+    st.markdown("""
+    <div class="main-header">
+        <h1>Workforce Analytics Overview</h1>
+        <p>Comprehensive analysis of employee data and retention patterns</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Key metrics section
+    st.markdown('<div class="section-header"><h3>Key Performance Indicators</h3></div>', unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    total_employees = len(df)
+    attrition_rate = (df['Attrition'] == 'Yes').mean() * 100
+    avg_tenure = df['YearsAtCompany'].mean()
+    avg_age = df['Age'].mean()
+    
+    with col1:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style="color: #1f4e79; margin: 0;">Total Workforce</h4>
+            <h2 style="color: #2c5aa0; margin: 5px 0;">{total_employees:,}</h2>
+            <p style="margin: 0; color: #666;">Active Employees</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style="color: #1f4e79; margin: 0;">Attrition Rate</h4>
+            <h2 style="color: #e74c3c; margin: 5px 0;">{attrition_rate:.1f}%</h2>
+            <p style="margin: 0; color: #666;">Annual Turnover</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style="color: #1f4e79; margin: 0;">Average Tenure</h4>
+            <h2 style="color: #27ae60; margin: 5px 0;">{avg_tenure:.1f}</h2>
+            <p style="margin: 0; color: #666;">Years at Company</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style="color: #1f4e79; margin: 0;">Average Age</h4>
+            <h2 style="color: #8e44ad; margin: 5px 0;">{avg_age:.1f}</h2>
+            <p style="margin: 0; color: #666;">Years Old</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Charts section
+    st.markdown('<div class="section-header"><h3>Workforce Distribution Analysis</h3></div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Attrition Distribution")
-        fig = px.pie(df, names='Attrition', title='Employee Attrition Distribution')
-        st.plotly_chart(fig)
+        st.subheader("Retention vs Attrition Distribution")
+        attrition_counts = df['Attrition'].value_counts()
+        fig = px.pie(
+            values=attrition_counts.values, 
+            names=['Retained Employees', 'Left Company'],
+            title='Employee Retention Overview',
+            color_discrete_sequence=['#2c5aa0', '#e74c3c']
+        )
+        fig.update_layout(
+            showlegend=True,
+            height=400,
+            font=dict(size=12)
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
     with col2:
-        st.subheader("Department-wise Attrition")
-        dept_attrition = df.groupby(['Department', 'Attrition']).size().unstack()
-        fig = px.bar(dept_attrition, barmode='group', title='Attrition by Department')
-        st.plotly_chart(fig)
-
-    st.subheader("Key Metrics")
-    metrics = st.columns(4)
-    metrics[0].metric("Total Employees", len(df))
-    metrics[1].metric("Attrition Rate", f"{(df['Attrition'] == 'Yes').mean():.1%}")
-    metrics[2].metric("Avg Tenure", f"{df['YearsAtCompany'].mean():.1f} years")
-    metrics[3].metric("Avg Age", f"{df['Age'].mean():.1f} years")
+        st.subheader("Department-wise Workforce Analysis")
+        dept_attrition = df.groupby(['Department', 'Attrition']).size().unstack(fill_value=0)
+        fig = px.bar(
+            dept_attrition, 
+            barmode='group', 
+            title='Workforce Distribution by Department',
+            color_discrete_sequence=['#2c5aa0', '#e74c3c']
+        )
+        fig.update_layout(
+            height=400,
+            xaxis_title="Department",
+            yaxis_title="Number of Employees",
+            font=dict(size=12)
+        )
+        st.plotly_chart(fig, use_container_width=True)
     
 
 def display_data_exploration(df):
-    st.subheader("Data Exploration")
+    st.markdown("""
+    <div class="main-header">
+        <h1>Data Exploration & Analysis</h1>
+        <p>Deep dive into workforce data patterns and distributions</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Dataset overview
-    if st.checkbox("Show Dataset"):
-        st.write(df)
+    # Dataset overview section
+    st.markdown('<div class="section-header"><h3>Dataset Overview</h3></div>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([2, 1, 1])
+    
+    with col1:
+        if st.checkbox("Display Complete Dataset"):
+            st.dataframe(df, use_container_width=True, height=400)
+    
+    with col2:
+        st.markdown(f"""
+        <div class="info-box">
+            <h4>Dataset Summary</h4>
+            <p><strong>Total Records:</strong> {len(df):,}</p>
+            <p><strong>Features:</strong> {len(df.columns)}</p>
+            <p><strong>Data Quality:</strong> Complete</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        missing_data = df.isnull().sum().sum()
+        completeness = ((len(df) * len(df.columns) - missing_data) / (len(df) * len(df.columns))) * 100
+        st.markdown(f"""
+        <div class="success-box">
+            <h4>Data Completeness</h4>
+            <p><strong>Complete:</strong> {completeness:.1f}%</p>
+            <p><strong>Missing Values:</strong> {missing_data}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # Column analysis
-    st.subheader("Column Analysis")
-    selected_column = st.selectbox("Select Column to Analyze", df.columns)
+    # Advanced analysis section
+    st.markdown('<div class="section-header"><h3>Advanced Column Analysis</h3></div>', unsafe_allow_html=True)
+    
+    selected_column = st.selectbox(
+        "Select Feature for Detailed Analysis", 
+        df.columns,
+        help="Choose any column to view its distribution and statistical properties"
+    )
 
     col1, col2 = st.columns(2)
 
     with col1:
-        # Distribution plot
-        fig = px.histogram(df, x=selected_column, title=f"Distribution of {selected_column}")
+        st.subheader(f"Distribution Analysis: {selected_column}")
+        if df[selected_column].dtype in ['object', 'category']:
+            fig = px.histogram(
+                df, 
+                x=selected_column, 
+                title=f"Frequency Distribution of {selected_column}",
+                color_discrete_sequence=['#2c5aa0']
+            )
+        else:
+            fig = px.histogram(
+                df, 
+                x=selected_column, 
+                nbins=30,
+                title=f"Distribution of {selected_column}",
+                color_discrete_sequence=['#2c5aa0']
+            )
+        
+        fig.update_layout(
+            height=400,
+            showlegend=False,
+            font=dict(size=12)
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
-        # Box plot
-        fig = px.box(df, y=selected_column, title=f"Box Plot of {selected_column}")
-        st.plotly_chart(fig, use_container_width=True)
+        st.subheader(f"Statistical Summary: {selected_column}")
+        if df[selected_column].dtype in ['int64', 'float64']:
+            fig = px.box(
+                df, 
+                y=selected_column, 
+                title=f"Box Plot Analysis of {selected_column}",
+                color_discrete_sequence=['#2c5aa0']
+            )
+            fig.update_layout(
+                height=400,
+                showlegend=False,
+                font=dict(size=12)
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            # For categorical data, show value counts
+            value_counts = df[selected_column].value_counts().head(10)
+            st.markdown(f"""
+            <div class="info-box">
+                <h4>Top Values in {selected_column}</h4>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            for idx, (value, count) in enumerate(value_counts.items(), 1):
+                percentage = (count / len(df)) * 100
+                st.write(f"**{idx}.** {value}: {count:,} ({percentage:.1f}%)")
+    
+    # Correlation insights
+    if len(df.select_dtypes(include=['int64', 'float64']).columns) > 1:
+        st.markdown('<div class="section-header"><h3>Feature Relationships</h3></div>', unsafe_allow_html=True)
+        
+        numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
+        col1_corr = st.selectbox("Select First Feature", numeric_cols, key="corr1")
+        col2_corr = st.selectbox("Select Second Feature", numeric_cols, key="corr2")
+        
+        if col1_corr != col2_corr:
+            fig = px.scatter(
+                df, 
+                x=col1_corr, 
+                y=col2_corr,
+                color='Attrition' if 'Attrition' in df.columns else None,
+                title=f"Relationship between {col1_corr} and {col2_corr}",
+                color_discrete_sequence=['#2c5aa0', '#e74c3c']
+            )
+            fig.update_layout(height=500, font=dict(size=12))
+            st.plotly_chart(fig, use_container_width=True)
 
 def display_pca_analysis(df):
-    st.subheader("PCA Analysis")
+    st.markdown("""
+    <div class="main-header">
+        <h1>Principal Component Analysis</h1>
+        <p>Dimensionality reduction and feature importance analysis</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Prepare data for PCA
     numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
+    
+    if len(numeric_cols) < 2:
+        st.markdown("""
+        <div class="warning-box">
+            <h4>Insufficient Numeric Data</h4>
+            <p>PCA requires at least 2 numeric features. Please ensure your dataset contains numeric columns.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        return
+    
     X = df[numeric_cols]
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
+    # PCA configuration
+    st.markdown('<div class="section-header"><h3>PCA Configuration</h3></div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        max_components = min(10, len(numeric_cols))
+        n_components = st.slider(
+            "Number of Principal Components", 
+            2, max_components, 
+            min(3, max_components),
+            help="Select the number of principal components to analyze"
+        )
+    
+    with col2:
+        st.markdown(f"""
+        <div class="info-box">
+            <h4>Analysis Parameters</h4>
+            <p><strong>Original Features:</strong> {len(numeric_cols)}</p>
+            <p><strong>Components Selected:</strong> {n_components}</p>
+            <p><strong>Data Points:</strong> {len(df):,}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
     # Perform PCA
-    n_components = st.slider("Select number of PCA components", 2, min(10, len(numeric_cols)), 3)
     pca = PCA(n_components=n_components)
     pca_result = pca.fit_transform(X_scaled)
 
-    # Plot explained variance ratio
-    fig = px.line(
-        x=range(1, n_components + 1),
-        y=pca.explained_variance_ratio_,
-        title="Explained Variance Ratio by Principal Components",
-        labels={"x": "Principal Component", "y": "Explained Variance Ratio"}
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    # Results visualization
+    st.markdown('<div class="section-header"><h3>PCA Results & Visualization</h3></div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Variance Explained Analysis")
+        
+        # Create cumulative variance plot
+        cumulative_variance = np.cumsum(pca.explained_variance_ratio_)
+        
+        fig = go.Figure()
+        
+        # Individual variance
+        fig.add_trace(go.Bar(
+            x=list(range(1, n_components + 1)),
+            y=pca.explained_variance_ratio_,
+            name='Individual Variance',
+            marker_color='#2c5aa0',
+            opacity=0.7
+        ))
+        
+        # Cumulative variance line
+        fig.add_trace(go.Scatter(
+            x=list(range(1, n_components + 1)),
+            y=cumulative_variance,
+            mode='lines+markers',
+            name='Cumulative Variance',
+            line=dict(color='#e74c3c', width=3),
+            marker=dict(size=8)
+        ))
+        
+        fig.update_layout(
+            title="Variance Explained by Principal Components",
+            xaxis_title="Principal Component",
+            yaxis_title="Proportion of Variance Explained",
+            height=400,
+            showlegend=True,
+            font=dict(size=12)
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Variance summary
+        total_variance = cumulative_variance[-1] * 100
+        st.markdown(f"""
+        <div class="success-box">
+            <h4>Variance Summary</h4>
+            <p><strong>Total Variance Captured:</strong> {total_variance:.1f}%</p>
+            <p><strong>First Component:</strong> {pca.explained_variance_ratio_[0]*100:.1f}%</p>
+            <p><strong>Second Component:</strong> {pca.explained_variance_ratio_[1]*100:.1f}%</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # 2D scatter plot of first two components
-    fig = px.scatter(
-        x=pca_result[:, 0],
-        y=pca_result[:, 1],
-        color=df['Attrition'],
-        title="First Two PCA Components"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    with col2:
+        st.subheader("Component Visualization")
+        
+        # 2D scatter plot of first two components
+        fig = px.scatter(
+            x=pca_result[:, 0],
+            y=pca_result[:, 1],
+            color=df['Attrition'] if 'Attrition' in df.columns else None,
+            title="Data Projection on First Two Principal Components",
+            labels={
+                'x': f'PC1 ({pca.explained_variance_ratio_[0]*100:.1f}% variance)',
+                'y': f'PC2 ({pca.explained_variance_ratio_[1]*100:.1f}% variance)'
+            },
+            color_discrete_sequence=['#2c5aa0', '#e74c3c']
+        )
+        
+        fig.update_layout(
+            height=400,
+            font=dict(size=12)
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Feature importance in components
+        if st.checkbox("Show Feature Contributions"):
+            st.subheader("Feature Contributions to Components")
+            
+            # Create feature importance DataFrame
+            feature_importance = pd.DataFrame(
+                pca.components_[:2].T,
+                columns=['PC1', 'PC2'],
+                index=numeric_cols
+            )
+            
+            # Sort by absolute contribution to PC1
+            feature_importance['Total_Contribution'] = (
+                abs(feature_importance['PC1']) + abs(feature_importance['PC2'])
+            )
+            feature_importance = feature_importance.sort_values('Total_Contribution', ascending=True)
+            
+            fig = go.Figure()
+            
+            fig.add_trace(go.Bar(
+                y=feature_importance.index,
+                x=feature_importance['PC1'],
+                name='PC1 Contribution',
+                orientation='h',
+                marker_color='#2c5aa0',
+                opacity=0.7
+            ))
+            
+            fig.add_trace(go.Bar(
+                y=feature_importance.index,
+                x=feature_importance['PC2'],
+                name='PC2 Contribution',
+                orientation='h',
+                marker_color='#e74c3c',
+                opacity=0.7
+            ))
+            
+            fig.update_layout(
+                title="Feature Contributions to Principal Components",
+                xaxis_title="Component Loading",
+                height=max(400, len(feature_importance) * 25),
+                barmode='group',
+                font=dict(size=10)
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
 
 def show_feature_analysis_page(df):
-    st.header("Feature Analysis")
+    st.markdown("""
+    <div class="main-header">
+        <h1>Feature Analysis & Insights</h1>
+        <p>Comprehensive analysis of feature relationships and importance</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Correlation heatmap
-    st.subheader("Feature Correlation")
+    # Feature correlation analysis
+    st.markdown('<div class="section-header"><h3>Feature Correlation Matrix</h3></div>', unsafe_allow_html=True)
+    
     numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
+    
+    if len(numeric_cols) < 2:
+        st.markdown("""
+        <div class="warning-box">
+            <h4>Limited Numeric Features</h4>
+            <p>Correlation analysis requires numeric features. Current dataset has limited numeric columns.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        return
+    
+    # Correlation matrix with improved visualization
     corr_matrix = df[numeric_cols].corr()
-    fig = px.imshow(corr_matrix, title="Correlation Heatmap")
-    st.plotly_chart(fig)
+    
+    # Create mask for upper triangle
+    mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
+    
+    fig = go.Figure(data=go.Heatmap(
+        z=corr_matrix.values,
+        x=corr_matrix.columns,
+        y=corr_matrix.columns,
+        colorscale='RdBu',
+        zmid=0,
+        text=np.round(corr_matrix.values, 2),
+        texttemplate='%{text}',
+        textfont={"size": 10},
+        colorbar=dict(title="Correlation Coefficient")
+    ))
+    
+    fig.update_layout(
+        title="Feature Correlation Heatmap",
+        height=600,
+        width=800,
+        font=dict(size=12)
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # High correlation pairs
+    st.markdown('<div class="section-header"><h3>Strong Feature Relationships</h3></div>', unsafe_allow_html=True)
+    
+    # Find highly correlated pairs
+    high_corr_pairs = []
+    for i in range(len(corr_matrix.columns)):
+        for j in range(i+1, len(corr_matrix.columns)):
+            corr_val = corr_matrix.iloc[i, j]
+            if abs(corr_val) > 0.5:  # Threshold for high correlation
+                high_corr_pairs.append({
+                    'Feature 1': corr_matrix.columns[i],
+                    'Feature 2': corr_matrix.columns[j],
+                    'Correlation': corr_val
+                })
+    
+    if high_corr_pairs:
+        corr_df = pd.DataFrame(high_corr_pairs)
+        corr_df = corr_df.sort_values('Correlation', key=abs, ascending=False)
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            st.subheader("Highly Correlated Feature Pairs")
+            st.dataframe(corr_df.round(3), use_container_width=True)
+        
+        with col2:
+            st.markdown("""
+            <div class="info-box">
+                <h4>Correlation Guide</h4>
+                <p><strong>Strong:</strong> |r| > 0.7</p>
+                <p><strong>Moderate:</strong> 0.5 < |r| < 0.7</p>
+                <p><strong>Weak:</strong> |r| < 0.5</p>
+                <p><strong>Positive:</strong> Features increase together</p>
+                <p><strong>Negative:</strong> One increases, other decreases</p>
+            </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <div class="info-box">
+            <h4>No Strong Correlations Found</h4>
+            <p>No feature pairs show correlation above 0.5 threshold.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # Feature importance
-    st.subheader("Feature Importance")
-    X = df.drop('Attrition', axis=1)
-    y = df['Attrition']
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    model.fit(X, y)
+    # Feature importance analysis
+    st.markdown('<div class="section-header"><h3>Feature Importance Analysis</h3></div>', unsafe_allow_html=True)
+    
+    if 'Attrition' in df.columns:
+        # Prepare data for feature importance
+        X = df.drop('Attrition', axis=1)
+        y = df['Attrition']
+        
+        # Handle categorical variables
+        X_encoded = pd.get_dummies(X, drop_first=True)
+        
+        # Train Random Forest for feature importance
+        model = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=10)
+        model.fit(X_encoded, y)
 
-    importance_df = pd.DataFrame({
-        'Feature': X.columns,
-        'Importance': model.feature_importances_
-    }).sort_values('Importance', ascending=False)
+        # Create feature importance DataFrame
+        importance_df = pd.DataFrame({
+            'Feature': X_encoded.columns,
+            'Importance': model.feature_importances_
+        }).sort_values('Importance', ascending=True)
 
-    fig = px.bar(importance_df.head(10), x='Importance', y='Feature',
-                 title='Top 10 Important Features')
-    st.plotly_chart(fig)
+        # Select top features for visualization
+        top_features = importance_df.tail(15)  # Top 15 features
+        
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            st.subheader("Top 15 Most Important Features")
+            
+            fig = go.Figure(go.Bar(
+                x=top_features['Importance'],
+                y=top_features['Feature'],
+                orientation='h',
+                marker_color='#2c5aa0',
+                text=np.round(top_features['Importance'], 3),
+                textposition='auto'
+            ))
+            
+            fig.update_layout(
+                title="Feature Importance Ranking",
+                xaxis_title="Importance Score",
+                yaxis_title="Features",
+                height=600,
+                font=dict(size=12)
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            st.subheader("Feature Statistics")
+            
+            total_importance = importance_df['Importance'].sum()
+            top_5_importance = importance_df.tail(5)['Importance'].sum()
+            
+            st.markdown(f"""
+            <div class="success-box">
+                <h4>Importance Summary</h4>
+                <p><strong>Total Features:</strong> {len(importance_df)}</p>
+                <p><strong>Top 5 Features:</strong> {top_5_importance*100:.1f}% of total importance</p>
+                <p><strong>Most Important:</strong> {importance_df.iloc[-1]['Feature']}</p>
+                <p><strong>Score:</strong> {importance_df.iloc[-1]['Importance']:.3f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Feature categories
+            st.subheader("Feature Categories")
+            categorical_features = len([col for col in X.columns if X[col].dtype == 'object'])
+            numerical_features = len([col for col in X.columns if X[col].dtype in ['int64', 'float64']])
+            
+            st.markdown(f"""
+            <div class="info-box">
+                <h4>Feature Types</h4>
+                <p><strong>Categorical:</strong> {categorical_features}</p>
+                <p><strong>Numerical:</strong> {numerical_features}</p>
+                <p><strong>After Encoding:</strong> {len(X_encoded.columns)}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Download feature importance data
+            csv_data = importance_df.to_csv(index=False)
+            st.download_button(
+                label="Download Feature Importance Data",
+                data=csv_data,
+                file_name="feature_importance.csv",
+                mime="text/csv"
+            )
+    else:
+        st.markdown("""
+        <div class="warning-box">
+            <h4>Target Variable Not Found</h4>
+            <p>Feature importance analysis requires a target variable named 'Attrition'.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 def show_model_performance_page(df):
     st.header("Model Performance Analysis")
@@ -432,26 +996,61 @@ def show_model_performance_page(df):
 
 # 2. Show the user interface and make predictions
 def show_prediction_interface(trained_models):
-    st.header("Attrition Prediction Interface")
+    st.markdown("""
+    <div class="main-header">
+        <h1>Employee Attrition Prediction</h1>
+        <p>Advanced machine learning models for workforce retention prediction</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Check if models are available
     if not trained_models:
-        st.warning("No pre-trained models available for prediction.")
-        st.info("Please train models first or provide pre-trained model files in a 'Models' directory.")
-        st.info("The following model files should be present in the 'Models' directory:")
-        model_files = [
-            "Stacked_RF+GB+SVM.joblib",
-            "Cascading_Classifiers.joblib", 
-            "Calibration_Curves.joblib",
-            "HGBoost+KNN.joblib",
-            "XGBRF.joblib",
-            "CatBoost+KNN.joblib",
-            "CatBoost.joblib",
-            "Random_Forest.joblib",
-            "Bagging.joblib"
-        ]
-        for file in model_files:
-            st.text(f"• {file}")
+        st.markdown("""
+        <div class="warning-box">
+            <h4>Prediction Models Not Available</h4>
+            <p>No pre-trained models are currently loaded. To enable predictions, please ensure the following:</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown('<div class="section-header"><h3>Required Model Files</h3></div>', unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""
+            <div class="info-box">
+                <h4>Primary Models</h4>
+                <ul>
+                    <li>Stacked_RF+GB+SVM.joblib</li>
+                    <li>Cascading_Classifiers.joblib</li>
+                    <li>Calibration_Curves.joblib</li>
+                    <li>HGBoost+KNN.joblib</li>
+                    <li>XGBRF.joblib</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""
+            <div class="info-box">
+                <h4>Supporting Models</h4>
+                <ul>
+                    <li>CatBoost+KNN.joblib</li>
+                    <li>CatBoost.joblib</li>
+                    <li>Random_Forest.joblib</li>
+                    <li>Bagging.joblib</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div class="info-box">
+            <h4>Setup Instructions</h4>
+            <p>1. Create a 'Models' directory in your project folder</p>
+            <p>2. Place the trained model files (.joblib format) in this directory</p>
+            <p>3. Restart the application to load the models</p>
+        </div>
+        """, unsafe_allow_html=True)
         return
 
     # Split the screen into two columns for better readability
@@ -585,15 +1184,49 @@ def show_prediction_interface(trained_models):
 
 # Main application
 def main():
-    st.title("Employee Attrition Analysis Dashboard")
+    st.markdown("""
+    <div class="main-header">
+        <h1>Workforce Analytics Dashboard</h1>
+        <p>Comprehensive Employee Data Analysis & Attrition Prediction System</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     df = load_data()
     df_processed = preprocess_data(df)
 
-    st.sidebar.header("Navigation")
+    # Enhanced sidebar with styling
+    st.sidebar.markdown("""
+    <div class="sidebar-content">
+        <h3 style="color: #1f4e79; margin-bottom: 1rem;">Navigation Menu</h3>
+        <p style="font-size: 0.9em; color: #666;">Select an analysis module below</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     page = st.sidebar.selectbox(
-        "Choose a page",
-        ["Overview", "Data Exploration", "PCA Analysis","Feature Analysis", "Model Performance", "Prediction Interface"]
+        "Choose Analysis Module",
+        ["Overview", "Data Exploration", "PCA Analysis","Feature Analysis", "Model Performance", "Prediction Interface"],
+        help="Navigate through different analysis modules"
     )
+    
+    # Add information in sidebar
+    st.sidebar.markdown("""
+    <div class="sidebar-content">
+        <h4 style="color: #1f4e79;">Module Information</h4>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if page == "Overview":
+        st.sidebar.info("View key workforce metrics and distribution analysis")
+    elif page == "Data Exploration":
+        st.sidebar.info("Explore data patterns and feature distributions")
+    elif page == "PCA Analysis":
+        st.sidebar.info("Dimensionality reduction and component analysis")
+    elif page == "Feature Analysis":
+        st.sidebar.info("Feature importance and correlation analysis")
+    elif page == "Model Performance":
+        st.sidebar.info("Evaluate machine learning model performance")
+    else:
+        st.sidebar.info("Generate attrition predictions for individual employees")
 
     if page == "Overview":
         show_overview_page(df)
