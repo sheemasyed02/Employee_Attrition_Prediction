@@ -23,85 +23,236 @@ st.set_page_config(
 # Custom CSS for professional styling
 st.markdown("""
 <style>
+    /* Import professional fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Global styling */
+    .main {
+        padding: 1rem 2rem;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Header styling */
     .main-header {
-        background: linear-gradient(90deg, #1f4e79 0%, #2c5aa0 100%);
-        padding: 2rem 1rem;
-        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem 2rem;
+        border-radius: 15px;
         margin-bottom: 2rem;
         color: white;
         text-align: center;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
     }
     
+    .main-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+    }
+    
+    .main-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .main-header p {
+        font-size: 1.2rem;
+        font-weight: 300;
+        margin: 0.5rem 0 0 0;
+        position: relative;
+        z-index: 1;
+        opacity: 0.9;
+    }
+    
+    /* Metric cards */
     .metric-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        border-left: 4px solid #2c5aa0;
-        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        padding: 2rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
     
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    /* Section headers */
     .section-header {
-        background: #f8f9fa;
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #2c5aa0;
-        margin: 1rem 0;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        border-left: 5px solid #667eea;
+        margin: 2rem 0 1.5rem 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
     
+    .section-header h3 {
+        margin: 0;
+        color: #2d3748;
+        font-weight: 600;
+        font-size: 1.4rem;
+    }
+    
+    /* Sidebar styling */
     .sidebar-content {
-        background: #f8f9fa;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
     
+    /* Info boxes */
     .info-box {
-        background: #e3f2fd;
-        border: 1px solid #2196f3;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1rem 0;
+        background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+        border: 1px solid #3182ce;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 2px 10px rgba(49, 130, 206, 0.1);
     }
     
     .warning-box {
-        background: #fff3e0;
-        border: 1px solid #ff9800;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1rem 0;
+        background: linear-gradient(135deg, #fffbeb 0%, #fed7aa 100%);
+        border: 1px solid #f59e0b;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 2px 10px rgba(245, 158, 11, 0.1);
     }
     
     .success-box {
-        background: #e8f5e8;
-        border: 1px solid #4caf50;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1rem 0;
+        background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+        border: 1px solid #38a169;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 2px 10px rgba(56, 161, 105, 0.1);
     }
     
+    /* Button styling */
     div.stButton > button {
-        background: linear-gradient(90deg, #2c5aa0 0%, #1f4e79 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 5px;
-        padding: 0.5rem 2rem;
+        border-radius: 8px;
+        padding: 0.75rem 2rem;
         font-weight: 600;
+        font-size: 1rem;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
     div.stButton > button:hover {
-        background: linear-gradient(90deg, #1f4e79 0%, #2c5aa0 100%);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
     }
     
+    /* Form controls */
     .stSelectbox > div > div {
-        border-radius: 5px;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
     }
     
-    .stSlider > div > div {
-        background: linear-gradient(90deg, #2c5aa0 0%, #1f4e79 100%);
+    .stSelectbox > div > div:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .stSlider > div > div > div > div {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    /* Chart containers */
+    .plotly-chart {
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin: 1rem 0;
+    }
+    
+    /* Dataframe styling */
+    .dataframe {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    /* Sidebar */
+    .css-1d391kg {
+        background-color: #f8fafc;
+    }
+    
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Professional typography */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    p, div, span {
+        font-family: 'Inter', sans-serif;
+        color: #4a5568;
+    }
+    
+    /* Animation for loading */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .metric-card, .section-header, .info-box, .warning-box, .success-box {
+        animation: fadeIn 0.6s ease-out;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .main-header {
+            padding: 2rem 1rem;
+        }
+        
+        .main-header h1 {
+            font-size: 2rem;
+        }
+        
+        .metric-card {
+            padding: 1.5rem 1rem;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -283,13 +434,13 @@ def show_overview_page(df):
     # Main header
     st.markdown("""
     <div class="main-header">
-        <h1>Workforce Analytics Overview</h1>
+        <h1>📊 Workforce Analytics Overview</h1>
         <p>Comprehensive analysis of employee data and retention patterns</p>
     </div>
     """, unsafe_allow_html=True)
 
     # Key metrics section
-    st.markdown('<div class="section-header"><h3>Key Performance Indicators</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header"><h3>📈 Key Performance Indicators</h3></div>', unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
     
@@ -301,46 +452,47 @@ def show_overview_page(df):
     with col1:
         st.markdown(f"""
         <div class="metric-card">
-            <h4 style="color: #1f4e79; margin: 0;">Total Workforce</h4>
-            <h2 style="color: #2c5aa0; margin: 5px 0;">{total_employees:,}</h2>
-            <p style="margin: 0; color: #666;">Active Employees</p>
+            <h4 style="color: #667eea; margin: 0; font-weight: 600;">👥 Total Workforce</h4>
+            <h2 style="color: #2d3748; margin: 10px 0; font-weight: 700;">{total_employees:,}</h2>
+            <p style="margin: 0; color: #718096; font-weight: 500;">Active Employees</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
+        color = "#e53e3e" if attrition_rate > 15 else "#38a169"
         st.markdown(f"""
         <div class="metric-card">
-            <h4 style="color: #1f4e79; margin: 0;">Attrition Rate</h4>
-            <h2 style="color: #e74c3c; margin: 5px 0;">{attrition_rate:.1f}%</h2>
-            <p style="margin: 0; color: #666;">Annual Turnover</p>
+            <h4 style="color: #667eea; margin: 0; font-weight: 600;">📉 Attrition Rate</h4>
+            <h2 style="color: {color}; margin: 10px 0; font-weight: 700;">{attrition_rate:.1f}%</h2>
+            <p style="margin: 0; color: #718096; font-weight: 500;">Annual Turnover</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
         st.markdown(f"""
         <div class="metric-card">
-            <h4 style="color: #1f4e79; margin: 0;">Average Tenure</h4>
-            <h2 style="color: #27ae60; margin: 5px 0;">{avg_tenure:.1f}</h2>
-            <p style="margin: 0; color: #666;">Years at Company</p>
+            <h4 style="color: #667eea; margin: 0; font-weight: 600;">⏱️ Average Tenure</h4>
+            <h2 style="color: #2d3748; margin: 10px 0; font-weight: 700;">{avg_tenure:.1f}</h2>
+            <p style="margin: 0; color: #718096; font-weight: 500;">Years at Company</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col4:
         st.markdown(f"""
         <div class="metric-card">
-            <h4 style="color: #1f4e79; margin: 0;">Average Age</h4>
-            <h2 style="color: #8e44ad; margin: 5px 0;">{avg_age:.1f}</h2>
-            <p style="margin: 0; color: #666;">Years Old</p>
+            <h4 style="color: #667eea; margin: 0; font-weight: 600;">🎂 Average Age</h4>
+            <h2 style="color: #2d3748; margin: 10px 0; font-weight: 700;">{avg_age:.1f}</h2>
+            <p style="margin: 0; color: #718096; font-weight: 500;">Years Old</p>
         </div>
         """, unsafe_allow_html=True)
 
     # Charts section
-    st.markdown('<div class="section-header"><h3>Workforce Distribution Analysis</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header"><h3>📊 Workforce Distribution Analysis</h3></div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Retention vs Attrition Distribution")
+        st.markdown("#### 🥧 Retention vs Attrition Distribution")
         attrition_counts = df_clean['Attrition'].value_counts()
         
         # Create proper labels based on actual data
@@ -349,38 +501,141 @@ def show_overview_page(df):
         for value in attrition_counts.index:
             if value == 'No':
                 labels.append('Retained Employees')
-                colors.append('#2c5aa0')
+                colors.append('#667eea')
             else:  # 'Yes'
                 labels.append('Left Company')
-                colors.append('#e74c3c')
+                colors.append('#f56565')
         
         fig = px.pie(
             values=attrition_counts.values, 
             names=labels,
             title='Employee Retention Overview',
-            color_discrete_sequence=colors
+            color_discrete_sequence=colors,
+            hole=0.4  # Create a donut chart
         )
+        
+        fig.update_traces(
+            textposition='inside', 
+            textinfo='percent+label',
+            textfont_size=12,
+            marker=dict(line=dict(color='#FFFFFF', width=2))
+        )
+        
         fig.update_layout(
             showlegend=True,
-            height=400,
-            font=dict(size=12)
+            height=450,
+            font=dict(size=14, family="Inter"),
+            title_font_size=16,
+            title_x=0.5,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=-0.2,
+                xanchor="center",
+                x=0.5
+            )
         )
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
-        st.subheader("Department-wise Workforce Analysis")
+        st.markdown("#### 📊 Department-wise Workforce Analysis")
         dept_attrition = df_clean.groupby(['Department', 'Attrition']).size().unstack(fill_value=0)
+        
         fig = px.bar(
             dept_attrition, 
             barmode='group', 
             title='Workforce Distribution by Department',
-            color_discrete_sequence=['#2c5aa0', '#e74c3c']
+            color_discrete_sequence=['#667eea', '#f56565'],
+            labels={'value': 'Number of Employees', 'index': 'Department'}
         )
+        
         fig.update_layout(
-            height=400,
+            height=450,
             xaxis_title="Department",
             yaxis_title="Number of Employees",
-            font=dict(size=12)
+            font=dict(size=14, family="Inter"),
+            title_font_size=16,
+            title_x=0.5,
+            xaxis_tickangle=-45,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=-0.3,
+                xanchor="center",
+                x=0.5,
+                title=""
+            )
+        )
+        
+        fig.update_traces(
+            marker_line_color='rgba(255,255,255,0.6)',
+            marker_line_width=1
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Additional insights section
+    st.markdown('<div class="section-header"><h3>🔍 Additional Insights</h3></div>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        # Age distribution
+        st.markdown("#### 📈 Age Distribution")
+        fig = px.histogram(
+            df_clean, 
+            x='Age', 
+            nbins=20,
+            title='Employee Age Distribution',
+            color_discrete_sequence=['#667eea']
+        )
+        fig.update_layout(
+            height=300,
+            font=dict(size=12, family="Inter"),
+            title_font_size=14,
+            title_x=0.5
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col2:
+        # Income distribution by attrition
+        st.markdown("#### 💰 Income by Attrition Status")
+        fig = px.box(
+            df_clean, 
+            x='Attrition', 
+            y='MonthlyIncome',
+            title='Monthly Income Distribution',
+            color='Attrition',
+            color_discrete_sequence=['#667eea', '#f56565']
+        )
+        fig.update_layout(
+            height=300,
+            font=dict(size=12, family="Inter"),
+            title_font_size=14,
+            title_x=0.5,
+            showlegend=False
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col3:
+        # Job satisfaction
+        st.markdown("#### 😊 Job Satisfaction Levels")
+        job_sat = df_clean['JobSatisfaction'].value_counts().sort_index()
+        fig = px.bar(
+            x=['Low', 'Medium', 'High', 'Very High'][:len(job_sat)],
+            y=job_sat.values,
+            title='Job Satisfaction Distribution',
+            color=job_sat.values,
+            color_continuous_scale='viridis'
+        )
+        fig.update_layout(
+            height=300,
+            font=dict(size=12, family="Inter"),
+            title_font_size=14,
+            title_x=0.5,
+            showlegend=False,
+            xaxis_title="Satisfaction Level",
+            yaxis_title="Number of Employees"
         )
         st.plotly_chart(fig, use_container_width=True)
     
@@ -394,27 +649,33 @@ def display_data_exploration(df):
     
     st.markdown("""
     <div class="main-header">
-        <h1>Data Exploration & Analysis</h1>
+        <h1>🔍 Data Exploration & Analysis</h1>
         <p>Deep dive into workforce data patterns and distributions</p>
     </div>
     """, unsafe_allow_html=True)
 
     # Dataset overview section
-    st.markdown('<div class="section-header"><h3>Dataset Overview</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header"><h3>📋 Dataset Overview</h3></div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([2, 1, 1])
     
     with col1:
-        if st.checkbox("Display Complete Dataset"):
-            st.dataframe(df_clean, use_container_width=True, height=400)
+        show_data = st.checkbox("📊 Display Complete Dataset", help="Toggle to show/hide the full dataset")
+        if show_data:
+            st.markdown("##### 📈 Complete Employee Dataset")
+            st.dataframe(
+                df_clean.style.highlight_max(axis=0), 
+                use_container_width=True, 
+                height=400
+            )
     
     with col2:
         st.markdown(f"""
         <div class="info-box">
-            <h4>Dataset Summary</h4>
-            <p><strong>Total Records:</strong> {len(df_clean):,}</p>
-            <p><strong>Features:</strong> {len(df_clean.columns)}</p>
-            <p><strong>Data Quality:</strong> Complete</p>
+            <h4>📊 Dataset Summary</h4>
+            <p><strong>📝 Total Records:</strong> {len(df_clean):,}</p>
+            <p><strong>🔢 Features:</strong> {len(df_clean.columns)}</p>
+            <p><strong>✅ Data Quality:</strong> Excellent</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -423,95 +684,224 @@ def display_data_exploration(df):
         completeness = ((len(df_clean) * len(df_clean.columns) - missing_data) / (len(df_clean) * len(df_clean.columns))) * 100
         st.markdown(f"""
         <div class="success-box">
-            <h4>Data Completeness</h4>
-            <p><strong>Complete:</strong> {completeness:.1f}%</p>
-            <p><strong>Missing Values:</strong> {missing_data}</p>
+            <h4>✅ Data Completeness</h4>
+            <p><strong>📊 Complete:</strong> {completeness:.1f}%</p>
+            <p><strong>❌ Missing Values:</strong> {missing_data}</p>
         </div>
         """, unsafe_allow_html=True)
 
     # Advanced analysis section
-    st.markdown('<div class="section-header"><h3>Advanced Column Analysis</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header"><h3>🔬 Advanced Column Analysis</h3></div>', unsafe_allow_html=True)
     
-    selected_column = st.selectbox(
-        "Select Feature for Detailed Analysis", 
-        df_clean.columns,
-        help="Choose any column to view its distribution and statistical properties"
-    )
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        selected_column = st.selectbox(
+            "🎯 Select Feature for Detailed Analysis", 
+            df_clean.columns,
+            help="Choose any column to view its distribution and statistical properties"
+        )
+    
+    with col2:
+        analysis_type = st.radio(
+            "📈 Analysis Type",
+            ["Distribution", "Statistical Summary", "Correlation"],
+            horizontal=True
+        )
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader(f"Distribution Analysis: {selected_column}")
-        if df_clean[selected_column].dtype in ['object', 'category']:
-            fig = px.histogram(
-                df_clean, 
-                x=selected_column, 
-                title=f"Frequency Distribution of {selected_column}",
-                color_discrete_sequence=['#2c5aa0']
-            )
-        else:
-            fig = px.histogram(
-                df_clean, 
-                x=selected_column, 
-                nbins=30,
-                title=f"Distribution of {selected_column}",
-                color_discrete_sequence=['#2c5aa0']
-            )
+        st.markdown(f"#### 📊 {analysis_type}: {selected_column}")
+        
+        if analysis_type == "Distribution":
+            if df_clean[selected_column].dtype in ['object', 'category']:
+                fig = px.histogram(
+                    df_clean, 
+                    x=selected_column, 
+                    title=f"📊 Frequency Distribution of {selected_column}",
+                    color_discrete_sequence=['#667eea'],
+                    text_auto=True
+                )
+                fig.update_traces(textfont_size=12)
+            else:
+                fig = px.histogram(
+                    df_clean, 
+                    x=selected_column, 
+                    nbins=30,
+                    title=f"📈 Distribution of {selected_column}",
+                    color_discrete_sequence=['#667eea'],
+                    marginal="box"  # Add box plot on top
+                )
+        
+        elif analysis_type == "Statistical Summary":
+            if df_clean[selected_column].dtype in ['int64', 'float64']:
+                fig = px.box(
+                    df_clean, 
+                    y=selected_column, 
+                    title=f"📦 Box Plot Analysis of {selected_column}",
+                    color_discrete_sequence=['#667eea'],
+                    points="outliers"  # Show outliers
+                )
+            else:
+                # For categorical data, create a pie chart
+                value_counts = df_clean[selected_column].value_counts()
+                fig = px.pie(
+                    values=value_counts.values,
+                    names=value_counts.index,
+                    title=f"🥧 Distribution of {selected_column}",
+                    color_discrete_sequence=px.colors.qualitative.Set3
+                )
+        
+        else:  # Correlation
+            if df_clean[selected_column].dtype in ['int64', 'float64'] and 'Attrition' in df_clean.columns:
+                fig = px.scatter(
+                    df_clean,
+                    x=selected_column,
+                    y='MonthlyIncome' if 'MonthlyIncome' in df_clean.columns else df_clean.select_dtypes(include=['int64', 'float64']).columns[0],
+                    color='Attrition',
+                    title=f"🔗 Correlation: {selected_column} vs Income",
+                    color_discrete_sequence=['#667eea', '#f56565'],
+                    trendline="ols"
+                )
+            else:
+                # Fallback to distribution for non-numeric
+                fig = px.histogram(
+                    df_clean, 
+                    x=selected_column, 
+                    title=f"📊 Distribution of {selected_column}",
+                    color_discrete_sequence=['#667eea']
+                )
         
         fig.update_layout(
-            height=400,
-            showlegend=False,
-            font=dict(size=12)
+            height=450,
+            showlegend=True,
+            font=dict(size=12, family="Inter"),
+            title_font_size=16,
+            title_x=0.5
         )
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
-        st.subheader(f"Statistical Summary: {selected_column}")
+        st.markdown(f"#### 📈 Insights for {selected_column}")
+        
         if df_clean[selected_column].dtype in ['int64', 'float64']:
-            fig = px.box(
-                df_clean, 
-                y=selected_column, 
-                title=f"Box Plot Analysis of {selected_column}",
-                color_discrete_sequence=['#2c5aa0']
-            )
-            fig.update_layout(
-                height=400,
-                showlegend=False,
-                font=dict(size=12)
-            )
-            st.plotly_chart(fig, use_container_width=True)
+            # Numerical insights
+            stats = df_clean[selected_column].describe()
+            st.markdown(f"""
+            <div class="info-box">
+                <h4>📊 Statistical Summary</h4>
+                <p><strong>📏 Mean:</strong> {stats['mean']:.2f}</p>
+                <p><strong>📐 Median:</strong> {stats['50%']:.2f}</p>
+                <p><strong>📊 Std Dev:</strong> {stats['std']:.2f}</p>
+                <p><strong>⬇️ Min:</strong> {stats['min']:.2f}</p>
+                <p><strong>⬆️ Max:</strong> {stats['max']:.2f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Check for outliers
+            Q1 = stats['25%']
+            Q3 = stats['75%']
+            IQR = Q3 - Q1
+            outliers = df_clean[(df_clean[selected_column] < Q1 - 1.5*IQR) | (df_clean[selected_column] > Q3 + 1.5*IQR)]
+            
+            if len(outliers) > 0:
+                st.markdown(f"""
+                <div class="warning-box">
+                    <h4>⚠️ Outlier Detection</h4>
+                    <p><strong>🎯 Outliers Found:</strong> {len(outliers)}</p>
+                    <p><strong>📊 Percentage:</strong> {(len(outliers)/len(df_clean)*100):.1f}%</p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+                <div class="success-box">
+                    <h4>✅ No Outliers</h4>
+                    <p>Data appears to be well-distributed without significant outliers.</p>
+                </div>
+                """, unsafe_allow_html=True)
+        
         else:
-            # For categorical data, show value counts
+            # Categorical insights
             value_counts = df_clean[selected_column].value_counts().head(10)
             st.markdown(f"""
             <div class="info-box">
-                <h4>Top Values in {selected_column}</h4>
+                <h4>🏷️ Top Categories in {selected_column}</h4>
             </div>
             """, unsafe_allow_html=True)
             
             for idx, (value, count) in enumerate(value_counts.items(), 1):
                 percentage = (count / len(df_clean)) * 100
-                st.write(f"**{idx}.** {value}: {count:,} ({percentage:.1f}%)")
+                st.markdown(f"**{idx}.** {value}: **{count:,}** ({percentage:.1f}%)")
+            
+            # Diversity metric
+            unique_values = df_clean[selected_column].nunique()
+            diversity = unique_values / len(df_clean) * 100
+            
+            st.markdown(f"""
+            <div class="success-box">
+                <h4>🌈 Diversity Metrics</h4>
+                <p><strong>🔢 Unique Values:</strong> {unique_values}</p>
+                <p><strong>📊 Diversity Index:</strong> {diversity:.1f}%</p>
+            </div>
+            """, unsafe_allow_html=True)
     
-    # Correlation insights
+    # Feature correlation heatmap
     if len(df_clean.select_dtypes(include=['int64', 'float64']).columns) > 1:
-        st.markdown('<div class="section-header"><h3>Feature Relationships</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header"><h3>🔗 Feature Correlation Matrix</h3></div>', unsafe_allow_html=True)
         
         numeric_cols = df_clean.select_dtypes(include=['int64', 'float64']).columns
-        col1_corr = st.selectbox("Select First Feature", numeric_cols, key="corr1")
-        col2_corr = st.selectbox("Select Second Feature", numeric_cols, key="corr2")
+        corr_matrix = df_clean[numeric_cols].corr()
         
-        if col1_corr != col2_corr:
-            fig = px.scatter(
-                df_clean, 
-                x=col1_corr, 
-                y=col2_corr,
-                color='Attrition' if 'Attrition' in df_clean.columns else None,
-                title=f"Relationship between {col1_corr} and {col2_corr}",
-                color_discrete_sequence=['#2c5aa0', '#e74c3c']
-            )
-            fig.update_layout(height=500, font=dict(size=12))
-            st.plotly_chart(fig, use_container_width=True)
+        # Create an interactive heatmap
+        fig = px.imshow(
+            corr_matrix,
+            title="🔥 Feature Correlation Heatmap",
+            color_continuous_scale="RdBu_r",
+            aspect="auto"
+        )
+        
+        fig.update_layout(
+            height=600,
+            font=dict(size=12, family="Inter"),
+            title_font_size=18,
+            title_x=0.5
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Show strongest correlations
+        corr_pairs = []
+        for i in range(len(corr_matrix.columns)):
+            for j in range(i+1, len(corr_matrix.columns)):
+                corr_val = corr_matrix.iloc[i, j]
+                if abs(corr_val) > 0.3:  # Show moderate to strong correlations
+                    corr_pairs.append({
+                        'Feature 1': corr_matrix.columns[i],
+                        'Feature 2': corr_matrix.columns[j],
+                        'Correlation': corr_val,
+                        'Strength': 'Strong' if abs(corr_val) > 0.7 else 'Moderate'
+                    })
+        
+        if corr_pairs:
+            corr_df = pd.DataFrame(corr_pairs).sort_values('Correlation', key=abs, ascending=False)
+            
+            col1, col2 = st.columns([2, 1])
+            with col1:
+                st.markdown("##### 🎯 Notable Feature Correlations")
+                st.dataframe(corr_df.round(3), use_container_width=True)
+            
+            with col2:
+                st.markdown("""
+                <div class="info-box">
+                    <h4>📖 Correlation Guide</h4>
+                    <p><strong>💪 Strong:</strong> |r| > 0.7</p>
+                    <p><strong>⚖️ Moderate:</strong> 0.3 < |r| < 0.7</p>
+                    <p><strong>💡 Interpretation:</strong></p>
+                    <p>• Positive: Variables increase together</p>
+                    <p>• Negative: One increases, other decreases</p>
+                </div>
+                """, unsafe_allow_html=True)
 
 def display_pca_analysis(df):
     st.markdown("""
@@ -1231,8 +1621,8 @@ def main():
     # Enhanced sidebar with styling
     st.sidebar.markdown("""
     <div class="sidebar-content">
-        <h3 style="color: #1f4e79; margin-bottom: 1rem;">Navigation Menu</h3>
-        <p style="font-size: 0.9em; color: #666;">Select an analysis module below</p>
+        <h3 style="color: #667eea; margin-bottom: 1rem; font-weight: 600;">Navigation Menu</h3>
+        <p style="font-size: 0.9em; color: #718096;">Select an analysis module below</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -1245,22 +1635,46 @@ def main():
     # Add information in sidebar
     st.sidebar.markdown("""
     <div class="sidebar-content">
-        <h4 style="color: #1f4e79;">Module Information</h4>
+        <h4 style="color: #667eea; font-weight: 600;">Module Information</h4>
     </div>
     """, unsafe_allow_html=True)
     
     if page == "Overview":
-        st.sidebar.info("View key workforce metrics and distribution analysis")
+        st.sidebar.markdown("""
+        <div class="info-box">
+            <p style="margin: 0;"><strong>Overview:</strong> View key workforce metrics and distribution analysis</p>
+        </div>
+        """, unsafe_allow_html=True)
     elif page == "Data Exploration":
-        st.sidebar.info("Explore data patterns and feature distributions")
+        st.sidebar.markdown("""
+        <div class="info-box">
+            <p style="margin: 0;"><strong>Data Exploration:</strong> Explore data patterns and feature distributions</p>
+        </div>
+        """, unsafe_allow_html=True)
     elif page == "PCA Analysis":
-        st.sidebar.info("Dimensionality reduction and component analysis")
+        st.sidebar.markdown("""
+        <div class="info-box">
+            <p style="margin: 0;"><strong>PCA Analysis:</strong> Dimensionality reduction and component analysis</p>
+        </div>
+        """, unsafe_allow_html=True)
     elif page == "Feature Analysis":
-        st.sidebar.info("Feature importance and correlation analysis")
+        st.sidebar.markdown("""
+        <div class="info-box">
+            <p style="margin: 0;"><strong>Feature Analysis:</strong> Feature importance and correlation analysis</p>
+        </div>
+        """, unsafe_allow_html=True)
     elif page == "Model Performance":
-        st.sidebar.info("Evaluate machine learning model performance")
+        st.sidebar.markdown("""
+        <div class="info-box">
+            <p style="margin: 0;"><strong>Model Performance:</strong> Evaluate machine learning model performance</p>
+        </div>
+        """, unsafe_allow_html=True)
     else:
-        st.sidebar.info("Generate attrition predictions for individual employees")
+        st.sidebar.markdown("""
+        <div class="info-box">
+            <p style="margin: 0;"><strong>Prediction Interface:</strong> Generate attrition predictions for individual employees</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     if page == "Overview":
         show_overview_page(df)
