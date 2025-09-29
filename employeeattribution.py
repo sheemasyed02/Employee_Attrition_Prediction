@@ -24,7 +24,14 @@ def load_data():
     # Load the dataset
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
-    df = pd.read_csv(file_path)
+    
+    # Handle CSV parsing error by skipping bad lines
+    try:
+        df = pd.read_csv(file_path)
+    except pd.errors.ParserError:
+        print("CSV parsing error detected. Attempting to load with error handling...")
+        df = pd.read_csv(file_path, on_bad_lines='skip')
+    
     return df
 
 def preprocess_data(df):
@@ -86,6 +93,12 @@ def load_models():
     base_path = os.path.dirname(os.path.abspath(__file__))
     save_path = os.path.join(base_path, 'Models')  # Adjusted for relative path
 
+    # Check if Models directory exists
+    if not os.path.exists(save_path):
+        print(f"Models directory not found at: {save_path}")
+        print("Creating an empty models dictionary. Please train models first or provide pre-trained models.")
+        return {}
+
     trained_models = {}
     model_names = [
         "Stacked RF+GB+SVM",
@@ -105,7 +118,8 @@ def load_models():
             # Build file path and verify existence
             file_name = os.path.join(save_path, f"{model_name.replace(' ', '_')}.joblib")
             if not os.path.exists(file_name):
-                raise FileNotFoundError(f"Model file not found: {file_name}")
+                print(f"Model file not found: {file_name}")
+                continue
             
             # Debug log for file path
             print(f"Attempting to load {model_name} from {file_name}...")
@@ -281,6 +295,10 @@ def show_model_performance_page(df):
     # Load models
     try:
         trained_models = load_models()
+        if not trained_models:
+            st.warning("No pre-trained models found. Please train models first or provide pre-trained model files in a 'Models' directory.")
+            st.info("The 'Models' directory should contain .joblib files with trained models.")
+            return
     except Exception as e:
         st.error(f"Error loading models: {str(e)}")
         return
@@ -415,6 +433,26 @@ def show_model_performance_page(df):
 # 2. Show the user interface and make predictions
 def show_prediction_interface(trained_models):
     st.header("Attrition Prediction Interface")
+    
+    # Check if models are available
+    if not trained_models:
+        st.warning("No pre-trained models available for prediction.")
+        st.info("Please train models first or provide pre-trained model files in a 'Models' directory.")
+        st.info("The following model files should be present in the 'Models' directory:")
+        model_files = [
+            "Stacked_RF+GB+SVM.joblib",
+            "Cascading_Classifiers.joblib", 
+            "Calibration_Curves.joblib",
+            "HGBoost+KNN.joblib",
+            "XGBRF.joblib",
+            "CatBoost+KNN.joblib",
+            "CatBoost.joblib",
+            "Random_Forest.joblib",
+            "Bagging.joblib"
+        ]
+        for file in model_files:
+            st.text(f"• {file}")
+        return
 
     # Split the screen into two columns for better readability
     col1, col2 = st.columns(2)
@@ -568,8 +606,12 @@ def main():
     elif page == "Model Performance":
         show_model_performance_page(df_processed)
     else:
-        trained_models = load_models()
-        show_prediction_interface(trained_models)
+        try:
+            trained_models = load_models()
+            show_prediction_interface(trained_models)
+        except Exception as e:
+            st.error(f"Error loading models: {str(e)}")
+            st.info("Please check that the 'Models' directory exists and contains the required model files.")
 
 if __name__ == "__main__":
 
