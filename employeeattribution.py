@@ -125,17 +125,28 @@ def load_data():
     return df
 
 def preprocess_data(df):
+    # Create a copy to avoid modifying the original dataframe
+    df_processed = df.copy()
+    
+    # Clean and normalize the Attrition column to handle case sensitivity
+    df_processed['Attrition'] = df_processed['Attrition'].str.upper()
+    df_processed['Attrition'] = df_processed['Attrition'].replace({'YES': 'Yes', 'NO': 'No'})
+    
     # Numerical encoding
     label_cols = ['Attrition', 'Gender', 'Over18', 'OverTime']
     for col in label_cols:
-        le = LabelEncoder()
-        df[col] = le.fit_transform(df[col])
+        if col in df_processed.columns:
+            le = LabelEncoder()
+            df_processed[col] = le.fit_transform(df_processed[col])
 
     # One-hot encoding
     categorical_cols = ['BusinessTravel', 'Department', 'MaritalStatus', 'EducationField', 'JobRole']
-    df = pd.get_dummies(df, columns=categorical_cols, drop_first=False)
+    existing_categorical_cols = [col for col in categorical_cols if col in df_processed.columns]
+    
+    if existing_categorical_cols:
+        df_processed = pd.get_dummies(df_processed, columns=existing_categorical_cols, drop_first=False)
 
-    return df
+    return df_processed
 
 class CascadeWrapper:
     def __init__(self, main_model, pre_model):
@@ -264,6 +275,11 @@ def load_models():
     return trained_models
     
 def show_overview_page(df):
+    # Clean and normalize the Attrition column to handle case sensitivity
+    df_clean = df.copy()
+    df_clean['Attrition'] = df_clean['Attrition'].str.upper()
+    df_clean['Attrition'] = df_clean['Attrition'].replace({'YES': 'Yes', 'NO': 'No'})
+    
     # Main header
     st.markdown("""
     <div class="main-header">
@@ -277,10 +293,10 @@ def show_overview_page(df):
     
     col1, col2, col3, col4 = st.columns(4)
     
-    total_employees = len(df)
-    attrition_rate = (df['Attrition'] == 'Yes').mean() * 100
-    avg_tenure = df['YearsAtCompany'].mean()
-    avg_age = df['Age'].mean()
+    total_employees = len(df_clean)
+    attrition_rate = (df_clean['Attrition'] == 'Yes').mean() * 100
+    avg_tenure = df_clean['YearsAtCompany'].mean()
+    avg_age = df_clean['Age'].mean()
     
     with col1:
         st.markdown(f"""
@@ -325,12 +341,24 @@ def show_overview_page(df):
 
     with col1:
         st.subheader("Retention vs Attrition Distribution")
-        attrition_counts = df['Attrition'].value_counts()
+        attrition_counts = df_clean['Attrition'].value_counts()
+        
+        # Create proper labels based on actual data
+        labels = []
+        colors = []
+        for value in attrition_counts.index:
+            if value == 'No':
+                labels.append('Retained Employees')
+                colors.append('#2c5aa0')
+            else:  # 'Yes'
+                labels.append('Left Company')
+                colors.append('#e74c3c')
+        
         fig = px.pie(
             values=attrition_counts.values, 
-            names=['Retained Employees', 'Left Company'],
+            names=labels,
             title='Employee Retention Overview',
-            color_discrete_sequence=['#2c5aa0', '#e74c3c']
+            color_discrete_sequence=colors
         )
         fig.update_layout(
             showlegend=True,
@@ -341,7 +369,7 @@ def show_overview_page(df):
 
     with col2:
         st.subheader("Department-wise Workforce Analysis")
-        dept_attrition = df.groupby(['Department', 'Attrition']).size().unstack(fill_value=0)
+        dept_attrition = df_clean.groupby(['Department', 'Attrition']).size().unstack(fill_value=0)
         fig = px.bar(
             dept_attrition, 
             barmode='group', 
@@ -358,6 +386,12 @@ def show_overview_page(df):
     
 
 def display_data_exploration(df):
+    # Clean and normalize the Attrition column to handle case sensitivity
+    df_clean = df.copy()
+    if 'Attrition' in df_clean.columns:
+        df_clean['Attrition'] = df_clean['Attrition'].str.upper()
+        df_clean['Attrition'] = df_clean['Attrition'].replace({'YES': 'Yes', 'NO': 'No'})
+    
     st.markdown("""
     <div class="main-header">
         <h1>Data Exploration & Analysis</h1>
@@ -372,21 +406,21 @@ def display_data_exploration(df):
     
     with col1:
         if st.checkbox("Display Complete Dataset"):
-            st.dataframe(df, use_container_width=True, height=400)
+            st.dataframe(df_clean, use_container_width=True, height=400)
     
     with col2:
         st.markdown(f"""
         <div class="info-box">
             <h4>Dataset Summary</h4>
-            <p><strong>Total Records:</strong> {len(df):,}</p>
-            <p><strong>Features:</strong> {len(df.columns)}</p>
+            <p><strong>Total Records:</strong> {len(df_clean):,}</p>
+            <p><strong>Features:</strong> {len(df_clean.columns)}</p>
             <p><strong>Data Quality:</strong> Complete</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
-        missing_data = df.isnull().sum().sum()
-        completeness = ((len(df) * len(df.columns) - missing_data) / (len(df) * len(df.columns))) * 100
+        missing_data = df_clean.isnull().sum().sum()
+        completeness = ((len(df_clean) * len(df_clean.columns) - missing_data) / (len(df_clean) * len(df_clean.columns))) * 100
         st.markdown(f"""
         <div class="success-box">
             <h4>Data Completeness</h4>
@@ -400,7 +434,7 @@ def display_data_exploration(df):
     
     selected_column = st.selectbox(
         "Select Feature for Detailed Analysis", 
-        df.columns,
+        df_clean.columns,
         help="Choose any column to view its distribution and statistical properties"
     )
 
@@ -408,16 +442,16 @@ def display_data_exploration(df):
 
     with col1:
         st.subheader(f"Distribution Analysis: {selected_column}")
-        if df[selected_column].dtype in ['object', 'category']:
+        if df_clean[selected_column].dtype in ['object', 'category']:
             fig = px.histogram(
-                df, 
+                df_clean, 
                 x=selected_column, 
                 title=f"Frequency Distribution of {selected_column}",
                 color_discrete_sequence=['#2c5aa0']
             )
         else:
             fig = px.histogram(
-                df, 
+                df_clean, 
                 x=selected_column, 
                 nbins=30,
                 title=f"Distribution of {selected_column}",
@@ -433,9 +467,9 @@ def display_data_exploration(df):
 
     with col2:
         st.subheader(f"Statistical Summary: {selected_column}")
-        if df[selected_column].dtype in ['int64', 'float64']:
+        if df_clean[selected_column].dtype in ['int64', 'float64']:
             fig = px.box(
-                df, 
+                df_clean, 
                 y=selected_column, 
                 title=f"Box Plot Analysis of {selected_column}",
                 color_discrete_sequence=['#2c5aa0']
@@ -448,7 +482,7 @@ def display_data_exploration(df):
             st.plotly_chart(fig, use_container_width=True)
         else:
             # For categorical data, show value counts
-            value_counts = df[selected_column].value_counts().head(10)
+            value_counts = df_clean[selected_column].value_counts().head(10)
             st.markdown(f"""
             <div class="info-box">
                 <h4>Top Values in {selected_column}</h4>
@@ -456,23 +490,23 @@ def display_data_exploration(df):
             """, unsafe_allow_html=True)
             
             for idx, (value, count) in enumerate(value_counts.items(), 1):
-                percentage = (count / len(df)) * 100
+                percentage = (count / len(df_clean)) * 100
                 st.write(f"**{idx}.** {value}: {count:,} ({percentage:.1f}%)")
     
     # Correlation insights
-    if len(df.select_dtypes(include=['int64', 'float64']).columns) > 1:
+    if len(df_clean.select_dtypes(include=['int64', 'float64']).columns) > 1:
         st.markdown('<div class="section-header"><h3>Feature Relationships</h3></div>', unsafe_allow_html=True)
         
-        numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
+        numeric_cols = df_clean.select_dtypes(include=['int64', 'float64']).columns
         col1_corr = st.selectbox("Select First Feature", numeric_cols, key="corr1")
         col2_corr = st.selectbox("Select Second Feature", numeric_cols, key="corr2")
         
         if col1_corr != col2_corr:
             fig = px.scatter(
-                df, 
+                df_clean, 
                 x=col1_corr, 
                 y=col2_corr,
-                color='Attrition' if 'Attrition' in df.columns else None,
+                color='Attrition' if 'Attrition' in df_clean.columns else None,
                 title=f"Relationship between {col1_corr} and {col2_corr}",
                 color_discrete_sequence=['#2c5aa0', '#e74c3c']
             )
