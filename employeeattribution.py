@@ -20,7 +20,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Simple, professional CSS
+# CSS
 st.markdown("""
 <style>
     .main {
@@ -698,4 +698,5 @@ def main():
         prediction_interface_page(df)
 
 if __name__ == "__main__":
+
     main()
