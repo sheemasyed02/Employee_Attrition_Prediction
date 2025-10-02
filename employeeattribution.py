@@ -12,7 +12,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
-
+ 
 # Page configuration
 st.set_page_config(
     page_title="HR Analytics Platform", 
@@ -700,3 +700,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
