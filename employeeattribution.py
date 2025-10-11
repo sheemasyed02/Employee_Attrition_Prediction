@@ -151,7 +151,7 @@ def executive_summary_report(df):
     """, unsafe_allow_html=True)
 
     # Use horizontal tabs instead of sections
-    tab1, tab2, tab3 = st.tabs(["📊 Key Metrics", "📈 Trends", "🎯 Insights"])
+    tab1, tab2, tab3 = st.tabs(["Key Metrics", "Trends", "Insights"])
     
     with tab1:
         # Metrics in a different layout - single row with different styling
@@ -282,7 +282,7 @@ def department_breakdown_analysis(df):
     departments = df_clean['Department'].unique()
     
     for i, dept in enumerate(departments):
-        with st.expander(f"📋 {dept} Department Analysis", expanded=(i==0)):
+        with st.expander(f"{dept} Department Analysis", expanded=(i==0)):
             dept_data = df_clean[df_clean['Department'] == dept]
             
             # Department-specific metrics in horizontal layout
