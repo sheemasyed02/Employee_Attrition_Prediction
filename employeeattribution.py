@@ -977,8 +977,10 @@ def employee_records_viewer(df):
         # Color-code the attrition column if present
         if 'Attrition' in selected_columns:
             def color_attrition(val):
-                color = '#ffebee' if val == 'Yes' else '#e8f5e8'
-                return f'background-color: {color}'
+                if val == 'Yes':
+                    return 'background-color: #ffebee; color: #d32f2f; font-weight: bold;'
+                else:
+                    return 'background-color: #e8f5e8; color: #388e3c; font-weight: bold;'
             
             styled_df = display_df.style.applymap(color_attrition, subset=['Attrition'])
             st.dataframe(styled_df, use_container_width=True, height=400)
