@@ -16,12 +16,12 @@ import os
  
 # Page configuration
 st.set_page_config(
-    page_title="HR Analytics Platform", 
+    page_title="Workforce Analytics Suite", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# CSS
+# CSS with updated layout structure
 st.markdown("""
 <style>
     .main {
@@ -29,68 +29,72 @@ st.markdown("""
         font-family: 'Arial', sans-serif;
     }
     
-    .header-box {
+    .enterprise-header {
         background-color: #2c3e50;
         color: white;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 30px;
-        text-align: center;
+        padding: 25px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        text-align: left;
+        border-left: 6px solid #3498db;
     }
     
-    .metric-box {
+    .analytics-card {
         background-color: white;
-        padding: 15px;
-        border-radius: 5px;
+        padding: 20px;
+        border-radius: 8px;
         border: 1px solid #ddd;
         text-align: center;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         color: #2c3e50;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
-    .section-box {
+    .content-divider {
         background-color: #ecf0f1;
-        padding: 10px;
-        border-left: 4px solid #3498db;
-        margin: 20px 0 10px 0;
+        padding: 12px;
+        border-left: 5px solid #3498db;
+        margin: 25px 0 15px 0;
         font-weight: bold;
         color: #2c3e50;
+        border-radius: 0 4px 4px 0;
     }
     
-    .info-box {
+    .data-panel {
         background-color: #e8f4fd;
-        padding: 15px;
-        border-radius: 5px;
+        padding: 18px;
+        border-radius: 8px;
         border: 1px solid #bee5eb;
-        margin: 10px 0;
+        margin: 12px 0;
         color: #2c3e50;
     }
     
-    .success-box {
+    .insights-panel {
         background-color: #d4edda;
-        padding: 15px;
-        border-radius: 5px;
+        padding: 18px;
+        border-radius: 8px;
         border: 1px solid #c3e6cb;
-        margin: 10px 0;
+        margin: 12px 0;
         color: #155724;
     }
     
-    .warning-box {
+    .alert-panel {
         background-color: #fff3cd;
-        padding: 15px;
-        border-radius: 5px;
+        padding: 18px;
+        border-radius: 8px;
         border: 1px solid #ffeaa7;
-        margin: 10px 0;
+        margin: 12px 0;
         color: #856404;
     }
     
-    .chart-container {
+    .visualization-frame {
         background-color: white;
-        padding: 15px;
-        border-radius: 5px;
+        padding: 20px;
+        border-radius: 8px;
         border: 1px solid #ddd;
-        margin: 10px 0;
+        margin: 12px 0;
         color: #2c3e50;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -132,155 +136,230 @@ def preprocess_data(df):
 
     return df_processed
 
-def show_overview_page(df):
+def executive_summary_report(df):
     # Clean data
     df_clean = df.copy()
     df_clean['Attrition'] = df_clean['Attrition'].str.upper()
     df_clean['Attrition'] = df_clean['Attrition'].replace({'YES': 'Yes', 'NO': 'No'})
     
-    # Header
+    # Completely different layout structure - using tabs at the top
     st.markdown("""
-    <div class="header-box">
-        <h1>Human Resources Analytics Dashboard</h1>
-        <p>Employee data analysis and workforce insights</p>
+    <div class="enterprise-header">
+        <h1>Executive Summary Report</h1>
+        <p>Strategic workforce overview and key performance indicators</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Key metrics
-    st.markdown('<div class="section-box">Key Performance Metrics</div>', unsafe_allow_html=True)
+    # Use horizontal tabs instead of sections
+    tab1, tab2, tab3 = st.tabs(["📊 Key Metrics", "📈 Trends", "🎯 Insights"])
     
-    col1, col2, col3, col4 = st.columns(4)
-    
-    total_employees = len(df_clean)
-    attrition_rate = (df_clean['Attrition'] == 'Yes').mean() * 100
-    avg_tenure = df_clean['YearsAtCompany'].mean()
-    avg_age = df_clean['Age'].mean()
-    
-    with col1:
-        st.markdown(f"""
-        <div class="metric-box">
-            <h3 style="color: #3498db; margin: 0;">{total_employees:,}</h3>
-            <p style="margin: 5px 0 0 0; color: #7f8c8d;">Total Employees</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        color = "#e74c3c" if attrition_rate > 15 else "#27ae60"
-        st.markdown(f"""
-        <div class="metric-box">
-            <h3 style="color: {color}; margin: 0;">{attrition_rate:.1f}%</h3>
-            <p style="margin: 5px 0 0 0; color: #7f8c8d;">Attrition Rate</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown(f"""
-        <div class="metric-box">
-            <h3 style="color: #3498db; margin: 0;">{avg_tenure:.1f}</h3>
-            <p style="margin: 5px 0 0 0; color: #7f8c8d;">Avg Tenure (Years)</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown(f"""
-        <div class="metric-box">
-            <h3 style="color: #3498db; margin: 0;">{avg_age:.1f}</h3>
-            <p style="margin: 5px 0 0 0; color: #7f8c8d;">Average Age</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    # Charts
-    st.markdown('<div class="section-box">Workforce Analysis</div>', unsafe_allow_html=True)
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-        st.subheader("Employee Retention Status")
-        attrition_counts = df_clean['Attrition'].value_counts()
+    with tab1:
+        # Metrics in a different layout - single row with different styling
+        total_employees = len(df_clean)
+        attrition_rate = (df_clean['Attrition'] == 'Yes').mean() * 100
+        avg_tenure = df_clean['YearsAtCompany'].mean()
+        avg_age = df_clean['Age'].mean()
         
-        labels = ['Retained Employees' if x == 'No' else 'Left Company' for x in attrition_counts.index]
-        colors = ['#3498db', '#e74c3c']
+        # Use different layout - 2x2 grid instead of 1x4
+        col1, col2 = st.columns(2)
         
-        fig = px.pie(
-            values=attrition_counts.values, 
-            names=labels,
-            title='Employee Retention Overview',
-            color_discrete_sequence=colors
-        )
-        
-        fig.update_layout(height=400, font=dict(size=12))
-        st.plotly_chart(fig, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with col2:
-        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-        st.subheader("Department Distribution")
-        
-        if 'Department' in df_clean.columns:
-            dept_attrition = df_clean.groupby(['Department', 'Attrition']).size().unstack(fill_value=0)
+        with col1:
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 30px; border-radius: 15px; margin: 10px 0;">
+                <h2 style="margin: 0; font-size: 2.5em;">{total_employees:,}</h2>
+                <p style="margin: 5px 0; font-size: 1.2em; opacity: 0.9;">Total Employees</p>
+            </div>
+            """, unsafe_allow_html=True)
             
-            fig = px.bar(
-                dept_attrition, 
-                barmode='group', 
-                title='Employees by Department',
-                color_discrete_sequence=['#3498db', '#e74c3c']
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #27ae60, #229954); color: white; padding: 30px; border-radius: 15px; margin: 10px 0;">
+                <h2 style="margin: 0; font-size: 2.5em;">{avg_tenure:.1f}</h2>
+                <p style="margin: 5px 0; font-size: 1.2em; opacity: 0.9;">Average Tenure (Years)</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            color = "#e74c3c" if attrition_rate > 15 else "#f39c12" if attrition_rate > 10 else "#27ae60"
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, {color}, #c0392b); color: white; padding: 30px; border-radius: 15px; margin: 10px 0;">
+                <h2 style="margin: 0; font-size: 2.5em;">{attrition_rate:.1f}%</h2>
+                <p style="margin: 5px 0; font-size: 1.2em; opacity: 0.9;">Turnover Rate</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 30px; border-radius: 15px; margin: 10px 0;">
+                <h2 style="margin: 0; font-size: 2.5em;">{avg_age:.1f}</h2>
+                <p style="margin: 5px 0; font-size: 1.2em; opacity: 0.9;">Average Age</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    with tab2:
+        # Different chart layout - side by side instead of stacked
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            st.subheader("Workforce Status")
+            attrition_counts = df_clean['Attrition'].value_counts()
+            
+            labels = ['Currently Employed' if x == 'No' else 'No Longer With Company' for x in attrition_counts.index]
+            colors = ['#2ecc71', '#e74c3c']
+            
+            fig = px.pie(
+                values=attrition_counts.values, 
+                names=labels,
+                title='Employee Status Distribution',
+                color_discrete_sequence=colors,
+                hole=0.4  # Donut chart instead of pie
             )
             
             fig.update_layout(height=400, font=dict(size=12))
             st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.info("Department data not available")
         
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # Additional insights
-    col1, col2 = st.columns(2)
+        with col2:
+            st.subheader("Age Distribution Trends")
+            
+            fig = px.histogram(
+                df_clean, 
+                x='Age', 
+                nbins=15,
+                title='Employee Age Groups',
+                color_discrete_sequence=['#3498db'],
+                marginal="box"  # Add box plot on top
+            )
+            
+            fig.update_layout(height=400, font=dict(size=12))
+            st.plotly_chart(fig, use_container_width=True)
     
-    with col1:
-        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-        st.subheader("Age Distribution")
+    with tab3:
+        # Insights in card format instead of boxes
+        col1, col2, col3 = st.columns(3)
         
-        fig = px.histogram(
-            df_clean, 
-            x='Age', 
-            nbins=20,
-            title='Employee Age Distribution',
-            color_discrete_sequence=['#3498db']
-        )
+        with col1:
+            high_risk = len(df_clean[(df_clean['Attrition'] == 'Yes')])
+            st.markdown(f"""
+            <div style="background: #fff; padding: 20px; border-radius: 10px; border-left: 5px solid #e74c3c; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #e74c3c; margin: 0;">High Risk Alert</h4>
+                <p style="margin: 10px 0 0 0;">{high_risk} employees have left the company</p>
+            </div>
+            """, unsafe_allow_html=True)
         
-        fig.update_layout(height=400, font=dict(size=12))
-        st.plotly_chart(fig, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with col2:
+            retention_rate = 100 - attrition_rate
+            st.markdown(f"""
+            <div style="background: #fff; padding: 20px; border-radius: 10px; border-left: 5px solid #27ae60; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #27ae60; margin: 0;">Retention Success</h4>
+                <p style="margin: 10px 0 0 0;">{retention_rate:.1f}% employee retention rate</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            avg_income = df_clean['MonthlyIncome'].mean() if 'MonthlyIncome' in df_clean.columns else 0
+            st.markdown(f"""
+            <div style="background: #fff; padding: 20px; border-radius: 10px; border-left: 5px solid #3498db; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="color: #3498db; margin: 0;">Compensation Insight</h4>
+                <p style="margin: 10px 0 0 0;">Average Monthly Income: ${avg_income:,.0f}</p>
+            </div>
+            """, unsafe_allow_html=True)
 
-    with col2:
-        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-        st.subheader("Tenure Analysis")
-        
-        fig = px.box(
-            df_clean, 
-            y='YearsAtCompany', 
-            title='Years at Company Distribution',
-            color_discrete_sequence=['#3498db']
-        )
-        
-        fig.update_layout(height=400, font=dict(size=12))
-        st.plotly_chart(fig, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-def display_data_exploration(df):
+def department_breakdown_analysis(df):
     df_clean = df.copy()
     df_clean['Attrition'] = df_clean['Attrition'].str.upper()
     df_clean['Attrition'] = df_clean['Attrition'].replace({'YES': 'Yes', 'NO': 'No'})
     
     st.markdown("""
-    <div class="header-box">
-        <h1>Data Exploration & Analysis</h1>
-        <p>Detailed data exploration and statistical insights</p>
+    <div class="enterprise-header">
+        <h1>Department Breakdown Analysis</h1>
+        <p>Comprehensive departmental performance and workforce distribution</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if 'Department' not in df_clean.columns:
+        st.error("Department data is not available in the dataset")
+        return
+    
+    # Create expandable sections for each department
+    departments = df_clean['Department'].unique()
+    
+    for i, dept in enumerate(departments):
+        with st.expander(f"📋 {dept} Department Analysis", expanded=(i==0)):
+            dept_data = df_clean[df_clean['Department'] == dept]
+            
+            # Department-specific metrics in horizontal layout
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("Total Staff", len(dept_data))
+            with col2:
+                dept_attrition = (dept_data['Attrition'] == 'Yes').mean() * 100
+                st.metric("Turnover Rate", f"{dept_attrition:.1f}%")
+            with col3:
+                avg_age_dept = dept_data['Age'].mean()
+                st.metric("Avg Age", f"{avg_age_dept:.1f}")
+            with col4:
+                avg_tenure_dept = dept_data['YearsAtCompany'].mean()
+                st.metric("Avg Tenure", f"{avg_tenure_dept:.1f}y")
+            
+            # Mini charts for each department
+            col_left, col_right = st.columns(2)
+            
+            with col_left:
+                attrition_count = dept_data['Attrition'].value_counts()
+                fig = px.bar(
+                    x=attrition_count.index,
+                    y=attrition_count.values,
+                    title=f"{dept} - Employee Status",
+                    color=attrition_count.index,
+                    color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
+                )
+                fig.update_layout(height=250, showlegend=False)
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with col_right:
+                if 'JobRole' in dept_data.columns:
+                    role_count = dept_data['JobRole'].value_counts().head(5)
+                    fig = px.pie(
+                        values=role_count.values,
+                        names=role_count.index,
+                        title=f"{dept} - Job Roles"
+                    )
+                    fig.update_layout(height=250)
+                    st.plotly_chart(fig, use_container_width=True)
+    
+    # Overall department comparison
+    st.markdown("### Department Comparison Overview")
+    
+    # Create department summary
+    dept_summary = []
+    for dept in departments:
+        dept_data = df_clean[df_clean['Department'] == dept]
+        dept_summary.append({
+            'Department': dept,
+            'Total Employees': len(dept_data),
+            'Turnover Rate (%)': (dept_data['Attrition'] == 'Yes').mean() * 100,
+            'Avg Age': dept_data['Age'].mean(),
+            'Avg Tenure': dept_data['YearsAtCompany'].mean()
+        })
+    
+    dept_df = pd.DataFrame(dept_summary)
+    
+    # Display as interactive table with color coding
+    st.dataframe(
+        dept_df.style.background_gradient(subset=['Turnover Rate (%)']),
+        use_container_width=True
+    )
+    df_clean = df.copy()
+    df_clean['Attrition'] = df_clean['Attrition'].str.upper()
+    df_clean['Attrition'] = df_clean['Attrition'].replace({'YES': 'Yes', 'NO': 'No'})
+    
+    st.markdown("""
+    <div class="enterprise-header">
+        <h1>Employee Dataset Explorer</h1>
+        <p>Comprehensive data analysis and statistical insights</p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="section-box">Dataset Overview</div>', unsafe_allow_html=True)
+    st.markdown('<div class="content-divider">Dataset Information</div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([2, 1, 1])
     
@@ -292,7 +371,7 @@ def display_data_exploration(df):
     
     with col2:
         st.markdown(f"""
-        <div class="info-box">
+        <div class="data-panel">
             <h4>Dataset Summary</h4>
             <p><strong>Total Records:</strong> {len(df_clean):,}</p>
             <p><strong>Features:</strong> {len(df_clean.columns)}</p>
@@ -304,7 +383,7 @@ def display_data_exploration(df):
         missing_data = df_clean.isnull().sum().sum()
         completeness = ((len(df_clean) * len(df_clean.columns) - missing_data) / (len(df_clean) * len(df_clean.columns))) * 100
         st.markdown(f"""
-        <div class="success-box">
+        <div class="insights-panel">
             <h4>Data Completeness</h4>
             <p><strong>Complete:</strong> {completeness:.1f}%</p>
             <p><strong>Missing:</strong> {missing_data}</p>
@@ -312,7 +391,7 @@ def display_data_exploration(df):
         """, unsafe_allow_html=True)
 
     # Feature analysis
-    st.markdown('<div class="section-box">Feature Analysis</div>', unsafe_allow_html=True)
+    st.markdown('<div class="content-divider">Feature Analysis</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([1, 1])
     
@@ -325,7 +404,7 @@ def display_data_exploration(df):
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+        st.markdown('<div class="visualization-frame">', unsafe_allow_html=True)
         st.subheader(f"{analysis_type}: {selected_column}")
         
         if analysis_type == "Distribution":
@@ -371,7 +450,7 @@ def display_data_exploration(df):
         if df_clean[selected_column].dtype in ['int64', 'float64']:
             stats = df_clean[selected_column].describe()
             st.markdown(f"""
-            <div class="info-box">
+            <div class="data-panel">
                 <h4>Statistical Summary</h4>
                 <p><strong>Mean:</strong> {stats['mean']:.2f}</p>
                 <p><strong>Median:</strong> {stats['50%']:.2f}</p>
@@ -382,17 +461,17 @@ def display_data_exploration(df):
             """, unsafe_allow_html=True)
         else:
             value_counts = df_clean[selected_column].value_counts().head(10)
-            st.markdown('<div class="info-box"><h4>Top Categories</h4></div>', unsafe_allow_html=True)
+            st.markdown('<div class="data-panel"><h4>Top Categories</h4></div>', unsafe_allow_html=True)
             
             for idx, (value, count) in enumerate(value_counts.items(), 1):
                 percentage = (count / len(df_clean)) * 100
                 st.markdown(f"**{idx}.** {value}: **{count:,}** ({percentage:.1f}%)")
 
-def display_pca_analysis(df):
+def statistical_analysis_module(df):
     st.markdown("""
-    <div class="header-box">
+    <div class="enterprise-header">
         <h1>Principal Component Analysis</h1>
-        <p>Dimensionality reduction and pattern analysis</p>
+        <p>Advanced statistical dimensionality reduction and pattern discovery</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -400,7 +479,7 @@ def display_pca_analysis(df):
     
     if len(numeric_cols) < 2:
         st.markdown("""
-        <div class="warning-box">
+        <div class="alert-panel">
             <h4>Insufficient Data</h4>
             <p>PCA requires at least 2 numeric features.</p>
         </div>
@@ -421,7 +500,7 @@ def display_pca_analysis(df):
     
     with col2:
         st.markdown(f"""
-        <div class="info-box">
+        <div class="data-panel">
             <h4>Analysis Parameters</h4>
             <p><strong>Features:</strong> {len(numeric_cols)}</p>
             <p><strong>Components:</strong> {n_components}</p>
@@ -437,7 +516,7 @@ def display_pca_analysis(df):
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+        st.markdown('<div class="visualization-frame">', unsafe_allow_html=True)
         st.subheader("Variance Explained")
         
         cumulative_variance = np.cumsum(pca.explained_variance_ratio_)
@@ -469,7 +548,7 @@ def display_pca_analysis(df):
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
-        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+        st.markdown('<div class="visualization-frame">', unsafe_allow_html=True)
         st.subheader("Component Visualization")
         
         fig = px.scatter(
@@ -488,11 +567,11 @@ def display_pca_analysis(df):
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-def show_feature_analysis_page(df):
+def correlation_analysis_module(df):
     st.markdown("""
-    <div class="header-box">
-        <h1>Feature Analysis & Insights</h1>
-        <p>Feature relationships and importance analysis</p>
+    <div class="enterprise-header">
+        <h1>Feature Correlation Study</h1>
+        <p>Advanced feature relationships and importance analysis</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -500,7 +579,7 @@ def show_feature_analysis_page(df):
     
     if len(numeric_cols) < 2:
         st.markdown("""
-        <div class="warning-box">
+        <div class="alert-panel">
             <h4>Limited Features</h4>
             <p>Analysis requires more numeric features.</p>
         </div>
@@ -511,7 +590,7 @@ def show_feature_analysis_page(df):
     
     corr_matrix = df[numeric_cols].corr()
     
-    st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+    st.markdown('<div class="visualization-frame">', unsafe_allow_html=True)
     fig = px.imshow(
         corr_matrix,
         title="Feature Correlation Matrix",
@@ -523,17 +602,17 @@ def show_feature_analysis_page(df):
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-def show_model_performance_page(df):
+def ml_performance_analysis(df):
     st.markdown("""
-    <div class="header-box">
-        <h1>Model Performance Analysis</h1>
-        <p>Comprehensive machine learning model evaluation and comparison</p>
+    <div class="enterprise-header">
+        <h1>Machine Learning Model Analysis</h1>
+        <p>Advanced predictive model evaluation and comparison framework</p>
     </div>
     """, unsafe_allow_html=True)
 
     if 'Attrition' not in df.columns:
         st.markdown("""
-        <div class="warning-box">
+        <div class="alert-panel">
             <h4>Missing Target Variable</h4>
             <p>Attrition column is required for model analysis.</p>
         </div>
@@ -596,7 +675,7 @@ def show_model_performance_page(df):
         comparison_df = comparison_df.round(3)
         
         # Display comparison table
-        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+        st.markdown('<div class="visualization-frame">', unsafe_allow_html=True)
         st.subheader("Performance Metrics Comparison")
         st.dataframe(comparison_df, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -605,7 +684,7 @@ def show_model_performance_page(df):
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            st.markdown('<div class="visualization-frame">', unsafe_allow_html=True)
             fig = px.bar(
                 comparison_df.reset_index(),
                 x='index',
@@ -618,7 +697,7 @@ def show_model_performance_page(df):
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col2:
-            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            st.markdown('<div class="visualization-frame">', unsafe_allow_html=True)
             fig = px.bar(
                 comparison_df.reset_index(),
                 x='index',
@@ -644,7 +723,7 @@ def show_model_performance_page(df):
             col1, col2 = st.columns(2)
             
             with col1:
-                st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                st.markdown('<div class="visualization-frame">', unsafe_allow_html=True)
                 fig = px.bar(
                     importance_df,
                     x='Importance',
@@ -658,7 +737,7 @@ def show_model_performance_page(df):
                 st.markdown('</div>', unsafe_allow_html=True)
             
             with col2:
-                st.markdown('<div class="info-box">', unsafe_allow_html=True)
+                st.markdown('<div class="data-panel">', unsafe_allow_html=True)
                 st.markdown("### Key Attrition Factors")
                 for i, row in importance_df.head(5).iterrows():
                     percentage = row['Importance'] * 100
@@ -672,7 +751,7 @@ def show_model_performance_page(df):
         
         with col1:
             st.markdown("""
-            <div class="success-box">
+            <div class="insights-panel">
                 <h4>Key Findings</h4>
                 <p><strong>Best Model:</strong> """ + max(results.keys(), key=lambda k: results[k]['ROC-AUC']) + """</p>
                 <p><strong>Highest Accuracy:</strong> """ + f"{max(results.values(), key=lambda x: x['Accuracy'])['Accuracy']:.1%}" + """</p>
@@ -682,7 +761,7 @@ def show_model_performance_page(df):
         
         with col2:
             st.markdown("""
-            <div class="info-box">
+            <div class="data-panel">
                 <h4>Recommended HR Strategies</h4>
                 <p><strong>1. Focus on High-Impact Areas:</strong> Target the top 3 identified factors</p>
                 <p><strong>2. Early Intervention:</strong> Use model to identify at-risk employees early</p>
@@ -692,15 +771,15 @@ def show_model_performance_page(df):
             </div>
             """, unsafe_allow_html=True)
 
-def prediction_interface_page(df):
+def employee_risk_prediction(df):
     st.markdown("""
-    <div class="header-box">
-        <h1>Employee Attrition Prediction</h1>
-        <p>Predict employee attrition based on individual characteristics</p>
+    <div class="enterprise-header">
+        <h1>Employee Attrition Risk Assessment</h1>
+        <p>Individual employee turnover risk evaluation system</p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="section-box">Prediction Interface</div>', unsafe_allow_html=True)
+    st.markdown('<div class="content-divider">Risk Assessment Interface</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
@@ -751,11 +830,477 @@ def prediction_interface_page(df):
             risk_level = "High"
         
         st.markdown(f"""
-        <div class="metric-box" style="margin-top: 20px;">
+        <div class="analytics-card" style="margin-top: 20px;">
             <h2 style="color: {color}; margin: 0;">{risk_percentage:.1f}%</h2>
-            <p style="margin: 5px 0 0 0; color: #7f8c8d;">Attrition Risk ({risk_level})</p>
+            <p style="margin: 5px 0 0 0; color: #7f8c8d;">Turnover Risk Level ({risk_level})</p>
         </div>
         """, unsafe_allow_html=True)
+
+def employee_records_viewer(df):
+    df_clean = df.copy()
+    df_clean['Attrition'] = df_clean['Attrition'].str.upper()
+    df_clean['Attrition'] = df_clean['Attrition'].replace({'YES': 'Yes', 'NO': 'No'})
+    
+    st.markdown("""
+    <div class="enterprise-header">
+        <h1>Employee Records Viewer</h1>
+        <p>Browse and filter employee database records</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Horizontal filter bar instead of vertical sections
+    st.markdown("### Filter & Search Options")
+    filter_col1, filter_col2, filter_col3, filter_col4 = st.columns(4)
+    
+    with filter_col1:
+        status_filter = st.multiselect(
+            "Employment Status",
+            options=['Yes', 'No'],
+            default=['Yes', 'No']
+        )
+    
+    with filter_col2:
+        if 'Department' in df_clean.columns:
+            dept_filter = st.multiselect(
+                "Department",
+                options=df_clean['Department'].unique(),
+                default=df_clean['Department'].unique()
+            )
+        else:
+            dept_filter = []
+    
+    with filter_col3:
+        age_range = st.slider(
+            "Age Range",
+            min_value=int(df_clean['Age'].min()),
+            max_value=int(df_clean['Age'].max()),
+            value=(int(df_clean['Age'].min()), int(df_clean['Age'].max()))
+        )
+    
+    with filter_col4:
+        show_count = st.number_input(
+            "Records to Display",
+            min_value=10,
+            max_value=len(df_clean),
+            value=100
+        )
+    
+    # Apply filters
+    filtered_df = df_clean[
+        (df_clean['Attrition'].isin(status_filter)) &
+        (df_clean['Age'] >= age_range[0]) &
+        (df_clean['Age'] <= age_range[1])
+    ]
+    
+    if dept_filter and 'Department' in df_clean.columns:
+        filtered_df = filtered_df[filtered_df['Department'].isin(dept_filter)]
+    
+    # Display summary stats above the table
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.info(f"**Showing:** {min(show_count, len(filtered_df))} of {len(filtered_df)} records")
+    with col2:
+        st.info(f"**Active Employees:** {len(filtered_df[filtered_df['Attrition'] == 'No'])}")
+    with col3:
+        st.info(f"**Former Employees:** {len(filtered_df[filtered_df['Attrition'] == 'Yes'])}")
+    
+    # Interactive data table with different column selection
+    st.markdown("### Employee Data Table")
+    
+    # Allow column selection
+    available_columns = df_clean.columns.tolist()
+    selected_columns = st.multiselect(
+        "Select columns to display:",
+        options=available_columns,
+        default=['Age', 'Department', 'JobRole', 'MonthlyIncome', 'YearsAtCompany', 'Attrition'] if all(col in available_columns for col in ['Age', 'Department', 'JobRole', 'MonthlyIncome', 'YearsAtCompany', 'Attrition']) else available_columns[:6]
+    )
+    
+    if selected_columns:
+        display_df = filtered_df[selected_columns].head(show_count)
+        
+        # Color-code the attrition column if present
+        if 'Attrition' in selected_columns:
+            def color_attrition(val):
+                color = '#ffebee' if val == 'Yes' else '#e8f5e8'
+                return f'background-color: {color}'
+            
+            styled_df = display_df.style.applymap(color_attrition, subset=['Attrition'])
+            st.dataframe(styled_df, use_container_width=True, height=400)
+        else:
+            st.dataframe(display_df, use_container_width=True, height=400)
+        
+        # Download option
+        csv = display_df.to_csv(index=False)
+        st.download_button(
+            label="Download Filtered Data as CSV",
+            data=csv,
+            file_name=f"employee_records_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv"
+        )
+
+def demographic_insights_analysis(df):
+    st.markdown("""
+    <div class="enterprise-header">
+        <h1>Demographic Insights Analysis</h1>
+        <p>Age, gender, and demographic patterns across the workforce</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Create demographic dashboard with different layout
+    tab1, tab2, tab3 = st.tabs(["Age Analysis", "Experience Levels", "Income Distribution"])
+    
+    with tab1:
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            # Age distribution with overlay
+            fig = px.histogram(
+                df, 
+                x='Age', 
+                color='Attrition',
+                nbins=20,
+                title='Age Distribution by Employment Status',
+                color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'},
+                barmode='overlay'
+            )
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            # Age group analysis
+            df['AgeGroup'] = pd.cut(df['Age'], bins=[0, 30, 40, 50, 100], labels=['Under 30', '30-39', '40-49', '50+'])
+            age_attrition = df.groupby('AgeGroup')['Attrition'].apply(lambda x: (x == 'Yes').mean() * 100)
+            
+            st.markdown("### Turnover by Age Group")
+            for age_group, rate in age_attrition.items():
+                st.metric(f"{age_group}", f"{rate:.1f}%")
+    
+    with tab2:
+        col1, col2 = st.columns(2)
+        with col1:
+            fig = px.scatter(
+                df,
+                x='YearsAtCompany',
+                y='Age',
+                color='Attrition',
+                title='Experience vs Age',
+                color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            fig = px.box(
+                df,
+                x='Attrition',
+                y='YearsAtCompany',
+                title='Tenure Distribution by Status',
+                color='Attrition',
+                color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
+            )
+            st.plotly_chart(fig, use_container_width=True)
+    
+    with tab3:
+        if 'MonthlyIncome' in df.columns:
+            col1, col2 = st.columns(2)
+            with col1:
+                fig = px.histogram(
+                    df,
+                    x='MonthlyIncome',
+                    color='Attrition',
+                    title='Income Distribution',
+                    nbins=20,
+                    color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
+                )
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with col2:
+                income_stats = df.groupby('Attrition')['MonthlyIncome'].agg(['mean', 'median'])
+                st.markdown("### Income Statistics")
+                st.dataframe(income_stats)
+
+def pattern_discovery_analysis(df):
+    st.markdown("""
+    <div class="enterprise-header">
+        <h1>Pattern Discovery Analysis</h1>
+        <p>Statistical patterns and correlations in employee data</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns.tolist()
+    
+    if len(numeric_cols) < 2:
+        st.error("Insufficient numeric columns for pattern analysis")
+        return
+    
+    # Pattern analysis in different sections
+    section = st.radio("Select Analysis Type", ["Correlation Matrix", "Principal Components", "Statistical Relationships"])
+    
+    if section == "Correlation Matrix":
+        correlation_matrix = df[numeric_cols].corr()
+        
+        # Interactive correlation heatmap
+        fig = px.imshow(
+            correlation_matrix,
+            title="Feature Correlation Heatmap",
+            color_continuous_scale='RdBu',
+            aspect="auto"
+        )
+        fig.update_layout(height=600)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Highlight strong correlations
+        st.markdown("### Strong Correlations (>0.5)")
+        strong_corr = []
+        for i in range(len(correlation_matrix.columns)):
+            for j in range(i+1, len(correlation_matrix.columns)):
+                corr_val = correlation_matrix.iloc[i, j]
+                if abs(corr_val) > 0.5:
+                    strong_corr.append({
+                        'Feature 1': correlation_matrix.columns[i],
+                        'Feature 2': correlation_matrix.columns[j],
+                        'Correlation': f"{corr_val:.3f}"
+                    })
+        
+        if strong_corr:
+            st.dataframe(pd.DataFrame(strong_corr))
+        else:
+            st.info("No strong correlations found")
+    
+    elif section == "Principal Components":
+        # PCA analysis with different visualization
+        from sklearn.decomposition import PCA
+        from sklearn.preprocessing import StandardScaler
+        
+        X = df[numeric_cols]
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        
+        n_components = st.slider("Number of Components", 2, min(10, len(numeric_cols)), 3)
+        pca = PCA(n_components=n_components)
+        pca_result = pca.fit_transform(X_scaled)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            # Variance explained
+            fig = px.bar(
+                x=range(1, n_components + 1),
+                y=pca.explained_variance_ratio_,
+                title="Variance Explained by Components"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            # 2D scatter plot
+            fig = px.scatter(
+                x=pca_result[:, 0],
+                y=pca_result[:, 1],
+                color=df['Attrition'],
+                title="First Two Principal Components",
+                color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+def model_evaluation_report(df):
+    st.markdown("""
+    <div class="enterprise-header">
+        <h1>Model Evaluation Report</h1>
+        <p>Comprehensive machine learning model assessment and comparison</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if 'Attrition' not in df.columns:
+        st.error("Attrition column required for model evaluation")
+        return
+    
+    # Model evaluation with different presentation format
+    df_processed = preprocess_data(df)
+    
+    if 'Attrition' in df_processed.columns:
+        X = df_processed.drop('Attrition', axis=1)
+        y = df_processed['Attrition']
+        
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        
+        # Model comparison in table format
+        models = {
+            'Random Forest': RandomForestClassifier(n_estimators=100, random_state=42),
+            'Logistic Regression': LogisticRegression(random_state=42, max_iter=1000),
+            'Gradient Boosting': GradientBoostingClassifier(n_estimators=100, random_state=42)
+        }
+        
+        results = []
+        feature_importance_rf = None
+        
+        progress_bar = st.progress(0)
+        for i, (name, model) in enumerate(models.items()):
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_test)
+            y_pred_proba = model.predict_proba(X_test)[:, 1] if hasattr(model, 'predict_proba') else None
+            
+            accuracy = accuracy_score(y_test, y_pred)
+            precision = precision_score(y_test, y_pred, average='weighted', zero_division=0)
+            recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
+            f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
+            
+            try:
+                roc_auc = roc_auc_score(y_test, y_pred_proba) if y_pred_proba is not None else 0
+            except:
+                roc_auc = 0
+            
+            results.append({
+                'Model': name,
+                'Accuracy': f"{accuracy:.3f}",
+                'Precision': f"{precision:.3f}",
+                'Recall': f"{recall:.3f}",
+                'F1-Score': f"{f1:.3f}",
+                'ROC-AUC': f"{roc_auc:.3f}"
+            })
+            
+            if name == 'Random Forest':
+                feature_importance_rf = model.feature_importances_
+            
+            progress_bar.progress((i + 1) / len(models))
+        
+        st.markdown("### Model Performance Comparison")
+        results_df = pd.DataFrame(results)
+        st.dataframe(results_df, use_container_width=True)
+        
+        # Feature importance in horizontal bar chart
+        if feature_importance_rf is not None:
+            st.markdown("### Feature Importance (Random Forest)")
+            
+            importance_df = pd.DataFrame({
+                'Feature': X.columns,
+                'Importance': feature_importance_rf
+            }).sort_values('Importance', ascending=True).tail(10)
+            
+            fig = px.bar(
+                importance_df,
+                x='Importance',
+                y='Feature',
+                orientation='h',
+                title="Top 10 Important Features"
+            )
+            fig.update_layout(height=500)
+            st.plotly_chart(fig, use_container_width=True)
+
+def individual_risk_calculator(df):
+    st.markdown("""
+    <div class="enterprise-header">
+        <h1>Individual Risk Calculator</h1>
+        <p>Calculate turnover risk for individual employees</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Risk calculator with step-by-step interface
+    st.markdown("### Employee Information Input")
+    
+    # Multi-step form layout
+    with st.form("risk_assessment_form"):
+        st.markdown("**Step 1: Basic Information**")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            age = st.number_input("Employee Age", min_value=18, max_value=70, value=30)
+            monthly_income = st.number_input("Monthly Income ($)", min_value=1000, max_value=50000, value=5000)
+            years_at_company = st.number_input("Years at Company", min_value=0, max_value=40, value=5)
+        
+        with col2:
+            job_satisfaction = st.select_slider("Job Satisfaction", options=[1, 2, 3, 4], value=3)
+            work_life_balance = st.select_slider("Work-Life Balance", options=[1, 2, 3, 4], value=3)
+            overtime = st.selectbox("Works Overtime", ["No", "Yes"])
+        
+        st.markdown("**Step 2: Calculate Risk**")
+        submitted = st.form_submit_button("Calculate Turnover Risk", use_container_width=True)
+        
+        if submitted:
+            # Enhanced risk calculation
+            risk_factors = []
+            risk_score = 0
+            
+            # Age factor
+            if age < 25:
+                risk_score += 0.25
+                risk_factors.append("Young employee (higher mobility)")
+            elif age > 55:
+                risk_score += 0.15
+                risk_factors.append("Nearing retirement age")
+            
+            # Income factor
+            if monthly_income < 3000:
+                risk_score += 0.3
+                risk_factors.append("Below average compensation")
+            elif monthly_income > 8000:
+                risk_score -= 0.1
+                risk_factors.append("Above average compensation")
+            
+            # Satisfaction factors
+            if job_satisfaction <= 2:
+                risk_score += 0.35
+                risk_factors.append("Low job satisfaction")
+            if work_life_balance <= 2:
+                risk_score += 0.25
+                risk_factors.append("Poor work-life balance")
+            
+            # Tenure factor
+            if years_at_company < 2:
+                risk_score += 0.2
+                risk_factors.append("New employee (settling period)")
+            elif years_at_company > 10:
+                risk_score -= 0.15
+                risk_factors.append("Long-term employee")
+            
+            # Overtime factor
+            if overtime == "Yes":
+                risk_score += 0.15
+                risk_factors.append("Regular overtime work")
+            
+            risk_percentage = min(max(risk_score * 100, 5), 95)  # Cap between 5-95%
+            
+            # Risk level classification
+            if risk_percentage < 25:
+                risk_level = "Low"
+                risk_color = "#27ae60"
+            elif risk_percentage < 50:
+                risk_level = "Moderate"
+                risk_color = "#f39c12"
+            elif risk_percentage < 75:
+                risk_level = "High"
+                risk_color = "#e67e22"
+            else:
+                risk_level = "Critical"
+                risk_color = "#e74c3c"
+            
+            # Display results in card format
+            col1, col2 = st.columns([1, 1])
+            
+            with col1:
+                st.markdown(f"""
+                <div style="background: {risk_color}; color: white; padding: 30px; border-radius: 15px; text-align: center;">
+                    <h1 style="margin: 0; font-size: 3em;">{risk_percentage:.0f}%</h1>
+                    <h3 style="margin: 10px 0 0 0; opacity: 0.9;">{risk_level} Risk</h3>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown("### Risk Factors Identified:")
+                if risk_factors:
+                    for factor in risk_factors:
+                        st.markdown(f"• {factor}")
+                else:
+                    st.markdown("• No significant risk factors identified")
+                
+                st.markdown("### Recommendations:")
+                if risk_percentage >= 75:
+                    st.markdown("• Immediate intervention required")
+                    st.markdown("• Schedule retention discussion")
+                    st.markdown("• Review compensation and role")
+                elif risk_percentage >= 50:
+                    st.markdown("• Monitor closely")
+                    st.markdown("• Address identified concerns")
+                    st.markdown("• Consider career development")
+                else:
+                    st.markdown("• Continue regular engagement")
+                    st.markdown("• Maintain current practices")
 
 # Main application
 def main():
@@ -769,31 +1314,45 @@ def main():
         st.error(f"Error loading data: {e}")
         return
     
-    # Sidebar navigation
+    # Completely redesigned navigation structure
     st.sidebar.markdown("""
-    <div class="section-box">
-        <h3>Navigation</h3>
+    <div class="content-divider">
+        <h3>Analysis Sections</h3>
     </div>
     """, unsafe_allow_html=True)
     
-    page = st.sidebar.selectbox(
-        "Select Page",
-        ["Overview", "Data Exploration", "PCA Analysis", "Feature Analysis", "Model Performance", "Prediction"]
+    # Use tabs-like interface instead of dropdown
+    main_section = st.sidebar.radio(
+        "Select Analysis Section",
+        ["Company Overview", "Employee Analysis", "Advanced Analytics", "Prediction Tools"]
     )
     
-    # Page routing
-    if page == "Overview":
-        show_overview_page(df)
-    elif page == "Data Exploration":
-        display_data_exploration(df)
-    elif page == "PCA Analysis":
-        display_pca_analysis(df)
-    elif page == "Feature Analysis":
-        show_feature_analysis_page(df)
-    elif page == "Model Performance":
-        show_model_performance_page(df)
-    elif page == "Prediction":
-        prediction_interface_page(df)
+    if main_section == "Company Overview":
+        st.sidebar.markdown("**Available Reports:**")
+        sub_option = st.sidebar.radio("", ["Executive Summary", "Department Analysis"])
+        if sub_option == "Executive Summary":
+            executive_summary_report(df)
+        else:
+            department_breakdown_analysis(df)
+    
+    elif main_section == "Employee Analysis":
+        st.sidebar.markdown("**Available Reports:**")
+        sub_option = st.sidebar.radio("", ["Employee Records", "Demographic Analysis"])
+        if sub_option == "Employee Records":
+            employee_records_viewer(df)
+        else:
+            demographic_insights_analysis(df)
+    
+    elif main_section == "Advanced Analytics":
+        st.sidebar.markdown("**Available Reports:**")
+        sub_option = st.sidebar.radio("", ["Pattern Analysis", "Model Performance"])
+        if sub_option == "Pattern Analysis":
+            pattern_discovery_analysis(df)
+        else:
+            model_evaluation_report(df)
+    
+    elif main_section == "Prediction Tools":
+        individual_risk_calculator(df)
 
 if __name__ == "__main__":
 
