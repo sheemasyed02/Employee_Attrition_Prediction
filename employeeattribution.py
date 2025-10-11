@@ -6,9 +6,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.decomposition import PCA
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, roc_curve
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
@@ -526,7 +527,7 @@ def show_model_performance_page(df):
     st.markdown("""
     <div class="header-box">
         <h1>Model Performance Analysis</h1>
-        <p>Machine learning model evaluation and metrics</p>
+        <p>Comprehensive machine learning model evaluation and comparison</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -539,7 +540,7 @@ def show_model_performance_page(df):
         """, unsafe_allow_html=True)
         return
 
-    # Quick model training for demonstration
+    # Data preprocessing
     df_processed = preprocess_data(df)
     
     if 'Attrition' in df_processed.columns:
@@ -548,49 +549,146 @@ def show_model_performance_page(df):
         
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         
-        model = RandomForestClassifier(n_estimators=50, random_state=42)
-        model.fit(X_train, y_train)
+        # Initialize models
+        models = {
+            'Random Forest': RandomForestClassifier(n_estimators=100, random_state=42),
+            'Logistic Regression': LogisticRegression(random_state=42, max_iter=1000),
+            'Gradient Boosting': GradientBoostingClassifier(n_estimators=100, random_state=42)
+        }
         
-        y_pred = model.predict(X_test)
+        # Train models and collect results
+        results = {}
+        feature_importance_rf = None
         
-        accuracy = accuracy_score(y_test, y_pred)
-        precision = precision_score(y_test, y_pred, average='weighted')
-        recall = recall_score(y_test, y_pred, average='weighted')
-        f1 = f1_score(y_test, y_pred, average='weighted')
+        for name, model in models.items():
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_test)
+            y_pred_proba = model.predict_proba(X_test)[:, 1] if hasattr(model, 'predict_proba') else None
+            
+            accuracy = accuracy_score(y_test, y_pred)
+            precision = precision_score(y_test, y_pred, average='weighted', zero_division=0)
+            recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
+            f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
+            
+            # Calculate ROC-AUC
+            try:
+                roc_auc = roc_auc_score(y_test, y_pred_proba) if y_pred_proba is not None else 0
+            except:
+                roc_auc = 0
+            
+            results[name] = {
+                'Accuracy': accuracy,
+                'Precision': precision,
+                'Recall': recall,
+                'F1 Score': f1,
+                'ROC-AUC': roc_auc
+            }
+            
+            # Store feature importance from Random Forest
+            if name == 'Random Forest':
+                feature_importance_rf = model.feature_importances_
         
-        st.markdown('<div class="section-box">Model Performance Metrics</div>', unsafe_allow_html=True)
+        # Model Comparison Section
+        st.markdown('<div class="section-box">Model Comparison Results</div>', unsafe_allow_html=True)
         
-        col1, col2, col3, col4 = st.columns(4)
+        # Create comparison dataframe
+        comparison_df = pd.DataFrame(results).T
+        comparison_df = comparison_df.round(3)
+        
+        # Display comparison table
+        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+        st.subheader("Performance Metrics Comparison")
+        st.dataframe(comparison_df, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Visualize model comparison
+        col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown(f"""
-            <div class="metric-box">
-                <h3 style="color: #3498db; margin: 0;">{accuracy:.3f}</h3>
-                <p style="margin: 5px 0 0 0; color: #7f8c8d;">Accuracy</p>
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            fig = px.bar(
+                comparison_df.reset_index(),
+                x='index',
+                y=['Accuracy', 'Precision', 'Recall', 'F1 Score'],
+                title="Model Performance Comparison",
+                color_discrete_sequence=['#3498db', '#e74c3c', '#f39c12', '#27ae60']
+            )
+            fig.update_layout(height=400, font=dict(size=12))
+            st.plotly_chart(fig, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            fig = px.bar(
+                comparison_df.reset_index(),
+                x='index',
+                y='ROC-AUC',
+                title="ROC-AUC Score Comparison",
+                color_discrete_sequence=['#9b59b6']
+            )
+            fig.update_layout(height=400, font=dict(size=12))
+            st.plotly_chart(fig, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Feature Importance Analysis
+        if feature_importance_rf is not None:
+            st.markdown('<div class="section-box">Feature Importance Analysis</div>', unsafe_allow_html=True)
+            
+            # Get top 10 most important features
+            feature_names = X.columns
+            importance_df = pd.DataFrame({
+                'Feature': feature_names,
+                'Importance': feature_importance_rf
+            }).sort_values('Importance', ascending=False).head(10)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                fig = px.bar(
+                    importance_df,
+                    x='Importance',
+                    y='Feature',
+                    orientation='h',
+                    title="Top 10 Most Important Features",
+                    color_discrete_sequence=['#3498db']
+                )
+                fig.update_layout(height=500, font=dict(size=12))
+                st.plotly_chart(fig, use_container_width=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown('<div class="info-box">', unsafe_allow_html=True)
+                st.markdown("### Key Attrition Factors")
+                for i, row in importance_df.head(5).iterrows():
+                    percentage = row['Importance'] * 100
+                    st.markdown(f"**{row['Feature']}**: {percentage:.1f}% importance")
+                st.markdown('</div>', unsafe_allow_html=True)
+        
+        # HR Insights and Recommendations
+        st.markdown('<div class="section-box">HR Insights & Recommendations</div>', unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""
+            <div class="success-box">
+                <h4>Key Findings</h4>
+                <p><strong>Best Model:</strong> """ + max(results.keys(), key=lambda k: results[k]['ROC-AUC']) + """</p>
+                <p><strong>Highest Accuracy:</strong> """ + f"{max(results.values(), key=lambda x: x['Accuracy'])['Accuracy']:.1%}" + """</p>
+                <p><strong>Risk Prediction:</strong> Model can identify high-risk employees with """ + f"{max(results.values(), key=lambda x: x['ROC-AUC'])['ROC-AUC']:.1%}" + """ accuracy</p>
             </div>
             """, unsafe_allow_html=True)
         
         with col2:
-            st.markdown(f"""
-            <div class="metric-box">
-                <h3 style="color: #3498db; margin: 0;">{precision:.3f}</h3>
-                <p style="margin: 5px 0 0 0; color: #7f8c8d;">Precision</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col3:
-            st.markdown(f"""
-            <div class="metric-box">
-                <h3 style="color: #3498db; margin: 0;">{recall:.3f}</h3>
-                <p style="margin: 5px 0 0 0; color: #7f8c8d;">Recall</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col4:
-            st.markdown(f"""
-            <div class="metric-box">
-                <h3 style="color: #3498db; margin: 0;">{f1:.3f}</h3>
-                <p style="margin: 5px 0 0 0; color: #7f8c8d;">F1 Score</p>
+            st.markdown("""
+            <div class="info-box">
+                <h4>Recommended HR Strategies</h4>
+                <p><strong>1. Focus on High-Impact Areas:</strong> Target the top 3 identified factors</p>
+                <p><strong>2. Early Intervention:</strong> Use model to identify at-risk employees early</p>
+                <p><strong>3. Regular Monitoring:</strong> Track key metrics monthly</p>
+                <p><strong>4. Targeted Retention:</strong> Develop specific programs for high-risk groups</p>
+                <p><strong>5. Exit Interviews:</strong> Validate model predictions with departing employees</p>
             </div>
             """, unsafe_allow_html=True)
 
