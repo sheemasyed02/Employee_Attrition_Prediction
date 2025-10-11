@@ -13,7 +13,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
-
+ 
 # Page configuration
 st.set_page_config(
     page_title="HR Analytics Platform", 
@@ -21,7 +21,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Simple, professional CSS
+# CSS
 st.markdown("""
 <style>
     .main {
@@ -796,4 +796,6 @@ def main():
         prediction_interface_page(df)
 
 if __name__ == "__main__":
+
     main()
+
