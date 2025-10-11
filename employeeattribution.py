@@ -21,7 +21,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS with updated layout structure
+# CSS layout structure
 st.markdown("""
 <style>
     .main {
@@ -116,7 +116,6 @@ def load_data():
 def preprocess_data(df):
     df_processed = df.copy()
     
-    # Clean Attrition column
     df_processed['Attrition'] = df_processed['Attrition'].str.upper()
     df_processed['Attrition'] = df_processed['Attrition'].replace({'YES': 'Yes', 'NO': 'No'})
     
@@ -142,7 +141,6 @@ def executive_summary_report(df):
     df_clean['Attrition'] = df_clean['Attrition'].str.upper()
     df_clean['Attrition'] = df_clean['Attrition'].replace({'YES': 'Yes', 'NO': 'No'})
     
-    # Completely different layout structure - using tabs at the top
     st.markdown("""
     <div class="enterprise-header">
         <h1>Executive Summary Report</h1>
@@ -150,17 +148,14 @@ def executive_summary_report(df):
     </div>
     """, unsafe_allow_html=True)
 
-    # Use horizontal tabs instead of sections
     tab1, tab2, tab3 = st.tabs(["Key Metrics", "Trends", "Insights"])
     
     with tab1:
-        # Improved metrics layout with better sizing and colors
         total_employees = len(df_clean)
         attrition_rate = (df_clean['Attrition'] == 'Yes').mean() * 100
         avg_tenure = df_clean['YearsAtCompany'].mean()
         avg_age = df_clean['Age'].mean()
         
-        # Use 4-column layout with consistent card design
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
@@ -196,10 +191,8 @@ def executive_summary_report(df):
             </div>
             """, unsafe_allow_html=True)
         
-        # Add some spacing
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # Additional summary information in cleaner format
         col1, col2 = st.columns([2, 1])
         
         with col1:
@@ -227,7 +220,6 @@ def executive_summary_report(df):
                 """, unsafe_allow_html=True)
     
     with tab2:
-        # Different chart layout - side by side instead of stacked
         col1, col2 = st.columns([1, 1])
         
         with col1:
@@ -242,7 +234,7 @@ def executive_summary_report(df):
                 names=labels,
                 title='Employee Status Distribution',
                 color_discrete_sequence=colors,
-                hole=0.4  # Donut chart instead of pie
+                hole=0.4  
             )
             
             fig.update_layout(height=400, font=dict(size=12))
@@ -257,14 +249,13 @@ def executive_summary_report(df):
                 nbins=15,
                 title='Employee Age Groups',
                 color_discrete_sequence=['#3498db'],
-                marginal="box"  # Add box plot on top
+                marginal="box" 
             )
             
             fig.update_layout(height=400, font=dict(size=12))
             st.plotly_chart(fig, use_container_width=True)
     
     with tab3:
-        # Improved insights with better layout and colors
         col1, col2 = st.columns([1, 1])
         
         with col1:
@@ -334,14 +325,12 @@ def department_breakdown_analysis(df):
         st.error("Department data is not available in the dataset")
         return
     
-    # Create expandable sections for each department
     departments = df_clean['Department'].unique()
     
     for i, dept in enumerate(departments):
         with st.expander(f"{dept} Department Analysis", expanded=(i==0)):
             dept_data = df_clean[df_clean['Department'] == dept]
             
-            # Department-specific metrics in horizontal layout
             col1, col2, col3, col4 = st.columns(4)
             
             with col1:
@@ -356,7 +345,6 @@ def department_breakdown_analysis(df):
                 avg_tenure_dept = dept_data['YearsAtCompany'].mean()
                 st.metric("Avg Tenure", f"{avg_tenure_dept:.1f}y")
             
-            # Mini charts for each department
             col_left, col_right = st.columns(2)
             
             with col_left:
@@ -382,10 +370,8 @@ def department_breakdown_analysis(df):
                     fig.update_layout(height=250)
                     st.plotly_chart(fig, use_container_width=True)
     
-    # Overall department comparison
     st.markdown("### Department Comparison Overview")
     
-    # Create department summary
     dept_summary = []
     for dept in departments:
         dept_data = df_clean[df_clean['Department'] == dept]
@@ -399,7 +385,6 @@ def department_breakdown_analysis(df):
     
     dept_df = pd.DataFrame(dept_summary)
     
-    # Display as interactive table with color coding
     st.dataframe(
         dept_df.style.background_gradient(subset=['Turnover Rate (%)']),
         use_container_width=True
@@ -769,7 +754,6 @@ def ml_performance_analysis(df):
         if feature_importance_rf is not None:
             st.markdown('<div class="section-box">Feature Importance Analysis</div>', unsafe_allow_html=True)
             
-            # Get top 10 most important features
             feature_names = X.columns
             importance_df = pd.DataFrame({
                 'Feature': feature_names,
@@ -903,7 +887,6 @@ def employee_risk_prediction(df):
         overtime = st.selectbox("OverTime", ["Yes", "No"])
     
     if st.button("Predict Attrition Risk"):
-        # Simple prediction logic (placeholder)
         risk_score = 0
         
         # Age factor
@@ -957,7 +940,6 @@ def employee_records_viewer(df):
     </div>
     """, unsafe_allow_html=True)
 
-    # Horizontal filter bar instead of vertical sections
     st.markdown("### Filter & Search Options")
     filter_col1, filter_col2, filter_col3, filter_col4 = st.columns(4)
     
@@ -1004,7 +986,6 @@ def employee_records_viewer(df):
     if dept_filter and 'Department' in df_clean.columns:
         filtered_df = filtered_df[filtered_df['Department'].isin(dept_filter)]
     
-    # Display summary stats above the table
     col1, col2, col3 = st.columns(3)
     with col1:
         st.info(f"**Showing:** {min(show_count, len(filtered_df))} of {len(filtered_df)} records")
@@ -1013,10 +994,8 @@ def employee_records_viewer(df):
     with col3:
         st.info(f"**Former Employees:** {len(filtered_df[filtered_df['Attrition'] == 'Yes'])}")
     
-    # Interactive data table with different column selection
     st.markdown("### Employee Data Table")
     
-    # Allow column selection
     available_columns = df_clean.columns.tolist()
     selected_columns = st.multiselect(
         "Select columns to display:",
@@ -1027,7 +1006,6 @@ def employee_records_viewer(df):
     if selected_columns:
         display_df = filtered_df[selected_columns].head(show_count)
         
-        # Color-code the attrition column if present
         if 'Attrition' in selected_columns:
             def color_attrition(val):
                 if val == 'Yes':
@@ -1057,13 +1035,11 @@ def demographic_insights_analysis(df):
     </div>
     """, unsafe_allow_html=True)
     
-    # Create demographic dashboard with different layout
     tab1, tab2, tab3 = st.tabs(["Age Analysis", "Experience Levels", "Income Distribution"])
     
     with tab1:
         col1, col2 = st.columns([2, 1])
         with col1:
-            # Age distribution with overlay
             fig = px.histogram(
                 df, 
                 x='Age', 
@@ -1142,13 +1118,11 @@ def pattern_discovery_analysis(df):
         st.error("Insufficient numeric columns for pattern analysis")
         return
     
-    # Pattern analysis in different sections
     section = st.radio("Select Analysis Type", ["Correlation Matrix", "Principal Components", "Statistical Relationships"])
     
     if section == "Correlation Matrix":
         correlation_matrix = df[numeric_cols].corr()
         
-        # Interactive correlation heatmap
         fig = px.imshow(
             correlation_matrix,
             title="Feature Correlation Heatmap",
@@ -1158,7 +1132,6 @@ def pattern_discovery_analysis(df):
         fig.update_layout(height=600)
         st.plotly_chart(fig, use_container_width=True)
         
-        # Highlight strong correlations
         st.markdown("### Strong Correlations (>0.5)")
         strong_corr = []
         for i in range(len(correlation_matrix.columns)):
@@ -1224,11 +1197,9 @@ def pattern_discovery_analysis(df):
             # Calculate correlation
             correlation = df[x_feature].corr(df[y_feature])
             
-            # Create scatter plot with regression line
             col1, col2 = st.columns([2, 1])
             
             with col1:
-                # Try to create scatter plot with trendline, fallback to basic plot if statsmodels not available
                 try:
                     fig = px.scatter(
                         df,
@@ -1240,7 +1211,6 @@ def pattern_discovery_analysis(df):
                         color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
                     )
                 except Exception as e:
-                    # Fallback to basic scatter plot without trendline
                     st.warning("Trendline analysis requires additional packages. Showing basic scatter plot.")
                     fig = px.scatter(
                         df,
@@ -1255,7 +1225,6 @@ def pattern_discovery_analysis(df):
                 st.plotly_chart(fig, use_container_width=True)
             
             with col2:
-                # Statistical summary
                 st.markdown(f"""
                 <div style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin: 10px 0;">
                     <h4 style="color: #2c3e50; margin: 0 0 15px 0;">Statistical Summary</h4>
@@ -1287,13 +1256,11 @@ def pattern_discovery_analysis(df):
                 </div>
                 """, unsafe_allow_html=True)
         
-        # Additional statistical insights
         st.markdown("### Advanced Statistical Analysis")
         
         col1, col2 = st.columns(2)
         
         with col1:
-            # Distribution comparison
             st.markdown("#### Feature Distributions")
             selected_feature = st.selectbox("Select Feature for Distribution", numeric_cols)
             
@@ -1321,7 +1288,6 @@ def pattern_discovery_analysis(df):
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
-            # Box plot comparison
             st.markdown("#### Statistical Comparison")
             box_feature = st.selectbox("Select Feature for Box Plot", numeric_cols, key="box_feature")
             
@@ -1349,7 +1315,6 @@ def pattern_discovery_analysis(df):
         if 'Attrition' in df.columns:
             st.markdown("### Key Statistical Insights")
             
-            # Calculate means for each group
             attrition_stats = df.groupby('Attrition')[numeric_cols].mean()
             
             col1, col2 = st.columns(2)
@@ -1367,7 +1332,7 @@ def pattern_discovery_analysis(df):
                         no_mean = df[df['Attrition'] == 'No'][col].mean()
                         diff_pct = ((yes_mean - no_mean) / no_mean * 100) if no_mean != 0 else 0
                         
-                        if abs(diff_pct) > 10:  # Show differences > 10%
+                        if abs(diff_pct) > 10: 
                             differences.append({
                                 'Feature': col,
                                 'Difference': f"{diff_pct:+.1f}%",
@@ -1394,7 +1359,6 @@ def model_evaluation_report(df):
         st.error("Attrition column required for model evaluation")
         return
     
-    # Model evaluation with different presentation format
     df_processed = preprocess_data(df)
     
     if 'Attrition' in df_processed.columns:
@@ -1403,7 +1367,6 @@ def model_evaluation_report(df):
         
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         
-        # Model comparison in table format
         models = {
             'Random Forest': RandomForestClassifier(n_estimators=100, random_state=42),
             'Logistic Regression': LogisticRegression(random_state=42, max_iter=1000),
@@ -1447,7 +1410,6 @@ def model_evaluation_report(df):
         results_df = pd.DataFrame(results)
         st.dataframe(results_df, use_container_width=True)
         
-        # Feature importance in horizontal bar chart
         if feature_importance_rf is not None:
             st.markdown("### Feature Importance (Random Forest)")
             
@@ -1474,10 +1436,8 @@ def individual_risk_calculator(df):
     </div>
     """, unsafe_allow_html=True)
     
-    # Risk calculator with step-by-step interface
     st.markdown("### Employee Information Input")
     
-    # Multi-step form layout
     with st.form("risk_assessment_form"):
         st.markdown("**Step 1: Basic Information**")
         col1, col2 = st.columns(2)
@@ -1496,7 +1456,6 @@ def individual_risk_calculator(df):
         submitted = st.form_submit_button("Calculate Turnover Risk", use_container_width=True)
         
         if submitted:
-            # Enhanced risk calculation
             risk_factors = []
             risk_score = 0
             
@@ -1537,7 +1496,7 @@ def individual_risk_calculator(df):
                 risk_score += 0.15
                 risk_factors.append("Regular overtime work")
             
-            risk_percentage = min(max(risk_score * 100, 5), 95)  # Cap between 5-95%
+            risk_percentage = min(max(risk_score * 100, 5), 95)  
             
             # Risk level classification
             if risk_percentage < 25:
@@ -1553,7 +1512,6 @@ def individual_risk_calculator(df):
                 risk_level = "Critical"
                 risk_color = "#e74c3c"
             
-            # Display results in card format
             col1, col2 = st.columns([1, 1])
             
             with col1:
@@ -1597,14 +1555,12 @@ def main():
         st.error(f"Error loading data: {e}")
         return
     
-    # Completely redesigned navigation structure
     st.sidebar.markdown("""
     <div class="content-divider">
         <h3>Analysis Sections</h3>
     </div>
     """, unsafe_allow_html=True)
     
-    # Use tabs-like interface instead of dropdown
     main_section = st.sidebar.radio(
         "Select Analysis Section",
         ["Company Overview", "Employee Analysis", "Advanced Analytics", "Prediction Tools"]
