@@ -826,6 +826,59 @@ def ml_performance_analysis(df):
                 <p><strong>5. Exit Interviews:</strong> Validate model predictions with departing employees</p>
             </div>
             """, unsafe_allow_html=True)
+        
+        # Model Export Feature
+        st.markdown('<div class="section-box">Model Export & Deployment</div>', unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Get best performing model
+            best_model_name = max(results.keys(), key=lambda k: results[k]['ROC-AUC'])
+            best_model = models[best_model_name]
+            
+            st.markdown(f"""
+            <div class="data-panel">
+                <h4>Best Model: {best_model_name}</h4>
+                <p><strong>ROC-AUC Score:</strong> {results[best_model_name]['ROC-AUC']:.3f}</p>
+                <p><strong>Accuracy:</strong> {results[best_model_name]['Accuracy']:.3f}</p>
+                <p><strong>Status:</strong> Ready for deployment</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Save model button
+            if st.button("Export Best Model", type="primary"):
+                try:
+                    # Save the best model
+                    model_filename = f"best_attrition_model_{best_model_name.lower().replace(' ', '_')}.pkl"
+                    joblib.dump(best_model, model_filename)
+                    
+                    # Save preprocessing info
+                    preprocessing_info = {
+                        'feature_columns': list(X.columns),
+                        'model_type': best_model_name,
+                        'performance_metrics': results[best_model_name]
+                    }
+                    joblib.dump(preprocessing_info, f"model_info_{best_model_name.lower().replace(' ', '_')}.pkl")
+
+                    st.success(f"Model exported successfully!")
+                    st.info(f"Saved as: {model_filename}")
+                    st.info(f"Model info saved as: model_info_{best_model_name.lower().replace(' ', '_')}.pkl")
+                    
+                except Exception as e:
+                    st.error(f"Error saving model: {str(e)}")
+        
+        with col2:
+            st.markdown("""
+            <div class="insights-panel">
+                <h4>Deployment Instructions</h4>
+                <p><strong>1. Model Files:</strong> Download the .pkl files generated</p>
+                <p><strong>2. Load Model:</strong> Use joblib.load() in production</p>
+                <p><strong>3. Preprocessing:</strong> Apply same transformations as training</p>
+                <p><strong>4. Prediction:</strong> Use model.predict_proba() for risk scores</p>
+                <p><strong>5. Integration:</strong> Embed in HR systems or dashboards</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 def employee_risk_prediction(df):
     st.markdown("""
@@ -1559,7 +1612,7 @@ def main():
     
     if main_section == "Company Overview":
         st.sidebar.markdown("**Available Reports:**")
-        sub_option = st.sidebar.radio("", ["Executive Summary", "Department Analysis"])
+        sub_option = st.sidebar.radio("Company Reports", ["Executive Summary", "Department Analysis"], label_visibility="collapsed")
         if sub_option == "Executive Summary":
             executive_summary_report(df)
         else:
@@ -1567,7 +1620,7 @@ def main():
     
     elif main_section == "Employee Analysis":
         st.sidebar.markdown("**Available Reports:**")
-        sub_option = st.sidebar.radio("", ["Employee Records", "Demographic Analysis"])
+        sub_option = st.sidebar.radio("Employee Reports", ["Employee Records", "Demographic Analysis"], label_visibility="collapsed")
         if sub_option == "Employee Records":
             employee_records_viewer(df)
         else:
@@ -1575,7 +1628,7 @@ def main():
     
     elif main_section == "Advanced Analytics":
         st.sidebar.markdown("**Available Reports:**")
-        sub_option = st.sidebar.radio("", ["Pattern Analysis", "Model Performance"])
+        sub_option = st.sidebar.radio("Analytics Reports", ["Pattern Analysis", "Model Performance"], label_visibility="collapsed")
         if sub_option == "Pattern Analysis":
             pattern_discovery_analysis(df)
         else:
