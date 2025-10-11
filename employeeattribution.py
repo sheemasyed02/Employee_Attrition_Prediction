@@ -154,45 +154,77 @@ def executive_summary_report(df):
     tab1, tab2, tab3 = st.tabs(["Key Metrics", "Trends", "Insights"])
     
     with tab1:
-        # Metrics in a different layout - single row with different styling
+        # Improved metrics layout with better sizing and colors
         total_employees = len(df_clean)
         attrition_rate = (df_clean['Attrition'] == 'Yes').mean() * 100
         avg_tenure = df_clean['YearsAtCompany'].mean()
         avg_age = df_clean['Age'].mean()
         
-        # Use different layout - 2x2 grid instead of 1x4
-        col1, col2 = st.columns(2)
+        # Use 4-column layout with consistent card design
+        col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 30px; border-radius: 15px; margin: 10px 0;">
-                <h2 style="margin: 0; font-size: 2.5em;">{total_employees:,}</h2>
-                <p style="margin: 5px 0; font-size: 1.2em; opacity: 0.9;">Total Employees</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #27ae60, #229954); color: white; padding: 30px; border-radius: 15px; margin: 10px 0;">
-                <h2 style="margin: 0; font-size: 2.5em;">{avg_tenure:.1f}</h2>
-                <p style="margin: 5px 0; font-size: 1.2em; opacity: 0.9;">Average Tenure (Years)</p>
+            <div style="background: #ffffff; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin: 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid #3498db;">
+                <h3 style="margin: 0; color: #3498db; font-size: 1.8em;">{total_employees:,}</h3>
+                <p style="margin: 8px 0 0 0; color: #7f8c8d; font-size: 0.9em;">Total Employees</p>
             </div>
             """, unsafe_allow_html=True)
         
         with col2:
             color = "#e74c3c" if attrition_rate > 15 else "#f39c12" if attrition_rate > 10 else "#27ae60"
             st.markdown(f"""
-            <div style="background: linear-gradient(135deg, {color}, #c0392b); color: white; padding: 30px; border-radius: 15px; margin: 10px 0;">
-                <h2 style="margin: 0; font-size: 2.5em;">{attrition_rate:.1f}%</h2>
-                <p style="margin: 5px 0; font-size: 1.2em; opacity: 0.9;">Turnover Rate</p>
+            <div style="background: #ffffff; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin: 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid {color};">
+                <h3 style="margin: 0; color: {color}; font-size: 1.8em;">{attrition_rate:.1f}%</h3>
+                <p style="margin: 8px 0 0 0; color: #7f8c8d; font-size: 0.9em;">Turnover Rate</p>
             </div>
             """, unsafe_allow_html=True)
-            
+        
+        with col3:
             st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; padding: 30px; border-radius: 15px; margin: 10px 0;">
-                <h2 style="margin: 0; font-size: 2.5em;">{avg_age:.1f}</h2>
-                <p style="margin: 5px 0; font-size: 1.2em; opacity: 0.9;">Average Age</p>
+            <div style="background: #ffffff; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin: 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid #27ae60;">
+                <h3 style="margin: 0; color: #27ae60; font-size: 1.8em;">{avg_tenure:.1f}</h3>
+                <p style="margin: 8px 0 0 0; color: #7f8c8d; font-size: 0.9em;">Average Tenure (Years)</p>
             </div>
             """, unsafe_allow_html=True)
+        
+        with col4:
+            st.markdown(f"""
+            <div style="background: #ffffff; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin: 5px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid #9b59b6;">
+                <h3 style="margin: 0; color: #9b59b6; font-size: 1.8em;">{avg_age:.1f}</h3>
+                <p style="margin: 8px 0 0 0; color: #7f8c8d; font-size: 0.9em;">Average Age</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Add some spacing
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # Additional summary information in cleaner format
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            if 'Department' in df_clean.columns:
+                dept_count = len(df_clean['Department'].unique())
+                active_employees = len(df_clean[df_clean['Attrition'] == 'No'])
+                st.markdown(f"""
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef;">
+                    <h5 style="margin: 0 0 10px 0; color: #495057;">Workforce Overview</h5>
+                    <p style="margin: 5px 0; color: #6c757d;"><strong>Active Employees:</strong> {active_employees:,}</p>
+                    <p style="margin: 5px 0; color: #6c757d;"><strong>Departments:</strong> {dept_count}</p>
+                    <p style="margin: 5px 0; color: #6c757d;"><strong>Retention Rate:</strong> {100-attrition_rate:.1f}%</p>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        with col2:
+            if 'MonthlyIncome' in df_clean.columns:
+                avg_income = df_clean['MonthlyIncome'].mean()
+                st.markdown(f"""
+                <div style="background: #e8f4fd; padding: 15px; border-radius: 8px; border: 1px solid #bee5eb;">
+                    <h5 style="margin: 0 0 10px 0; color: #0c5460;">Compensation</h5>
+                    <p style="margin: 5px 0; color: #0c5460;"><strong>Average Income:</strong></p>
+                    <p style="margin: 5px 0; color: #0c5460; font-size: 1.2em;"><strong>${avg_income:,.0f}</strong></p>
+                </div>
+                """, unsafe_allow_html=True)
     
     with tab2:
         # Different chart layout - side by side instead of stacked
@@ -232,33 +264,57 @@ def executive_summary_report(df):
             st.plotly_chart(fig, use_container_width=True)
     
     with tab3:
-        # Insights in card format instead of boxes
-        col1, col2, col3 = st.columns(3)
+        # Improved insights with better layout and colors
+        col1, col2 = st.columns([1, 1])
         
         with col1:
             high_risk = len(df_clean[(df_clean['Attrition'] == 'Yes')])
+            retention_rate = 100 - attrition_rate
+            
             st.markdown(f"""
-            <div style="background: #fff; padding: 20px; border-radius: 10px; border-left: 5px solid #e74c3c; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h4 style="color: #e74c3c; margin: 0;">High Risk Alert</h4>
-                <p style="margin: 10px 0 0 0;">{high_risk} employees have left the company</p>
+            <div style="background: #ffffff; padding: 18px; border-radius: 8px; border: 1px solid #dee2e6; margin: 8px 0; border-left: 4px solid #dc3545;">
+                <h5 style="color: #dc3545; margin: 0 0 8px 0;">Attrition Analysis</h5>
+                <p style="margin: 4px 0; color: #6c757d; font-size: 0.9em;"><strong>Employees Lost:</strong> {high_risk}</p>
+                <p style="margin: 4px 0; color: #6c757d; font-size: 0.9em;"><strong>Retention Rate:</strong> {retention_rate:.1f}%</p>
             </div>
             """, unsafe_allow_html=True)
+            
+            if 'Department' in df_clean.columns:
+                worst_dept = df_clean.groupby('Department')['Attrition'].apply(lambda x: (x == 'Yes').mean()).idxmax()
+                worst_rate = df_clean.groupby('Department')['Attrition'].apply(lambda x: (x == 'Yes').mean()).max() * 100
+                
+                st.markdown(f"""
+                <div style="background: #ffffff; padding: 18px; border-radius: 8px; border: 1px solid #dee2e6; margin: 8px 0; border-left: 4px solid #ffc107;">
+                    <h5 style="color: #856404; margin: 0 0 8px 0;">Department Alert</h5>
+                    <p style="margin: 4px 0; color: #6c757d; font-size: 0.9em;"><strong>Highest Turnover:</strong> {worst_dept}</p>
+                    <p style="margin: 4px 0; color: #6c757d; font-size: 0.9em;"><strong>Rate:</strong> {worst_rate:.1f}%</p>
+                </div>
+                """, unsafe_allow_html=True)
         
         with col2:
-            retention_rate = 100 - attrition_rate
+            if 'MonthlyIncome' in df_clean.columns:
+                left_avg_income = df_clean[df_clean['Attrition'] == 'Yes']['MonthlyIncome'].mean()
+                stayed_avg_income = df_clean[df_clean['Attrition'] == 'No']['MonthlyIncome'].mean()
+                income_diff = stayed_avg_income - left_avg_income
+                
+                st.markdown(f"""
+                <div style="background: #ffffff; padding: 18px; border-radius: 8px; border: 1px solid #dee2e6; margin: 8px 0; border-left: 4px solid #28a745;">
+                    <h5 style="color: #155724; margin: 0 0 8px 0;">Income Analysis</h5>
+                    <p style="margin: 4px 0; color: #6c757d; font-size: 0.9em;"><strong>Active Emp. Avg:</strong> ${stayed_avg_income:,.0f}</p>
+                    <p style="margin: 4px 0; color: #6c757d; font-size: 0.9em;"><strong>Left Emp. Avg:</strong> ${left_avg_income:,.0f}</p>
+                    <p style="margin: 4px 0; color: #6c757d; font-size: 0.9em;"><strong>Difference:</strong> ${income_diff:,.0f}</p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Age analysis
+            young_attrition = df_clean[df_clean['Age'] < 30]['Attrition'].apply(lambda x: x == 'Yes').mean() * 100
+            old_attrition = df_clean[df_clean['Age'] > 50]['Attrition'].apply(lambda x: x == 'Yes').mean() * 100
+            
             st.markdown(f"""
-            <div style="background: #fff; padding: 20px; border-radius: 10px; border-left: 5px solid #27ae60; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h4 style="color: #27ae60; margin: 0;">Retention Success</h4>
-                <p style="margin: 10px 0 0 0;">{retention_rate:.1f}% employee retention rate</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col3:
-            avg_income = df_clean['MonthlyIncome'].mean() if 'MonthlyIncome' in df_clean.columns else 0
-            st.markdown(f"""
-            <div style="background: #fff; padding: 20px; border-radius: 10px; border-left: 5px solid #3498db; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h4 style="color: #3498db; margin: 0;">Compensation Insight</h4>
-                <p style="margin: 10px 0 0 0;">Average Monthly Income: ${avg_income:,.0f}</p>
+            <div style="background: #ffffff; padding: 18px; border-radius: 8px; border: 1px solid #dee2e6; margin: 8px 0; border-left: 4px solid #6f42c1;">
+                <h5 style="color: #6f42c1; margin: 0 0 8px 0;">Age Demographics</h5>
+                <p style="margin: 4px 0; color: #6c757d; font-size: 0.9em;"><strong>Under 30 Turnover:</strong> {young_attrition:.1f}%</p>
+                <p style="margin: 4px 0; color: #6c757d; font-size: 0.9em;"><strong>Over 50 Turnover:</strong> {old_attrition:.1f}%</p>
             </div>
             """, unsafe_allow_html=True)
 
