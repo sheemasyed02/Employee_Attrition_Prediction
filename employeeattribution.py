@@ -1156,6 +1156,178 @@ def pattern_discovery_analysis(df):
                 color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
             )
             st.plotly_chart(fig, use_container_width=True)
+    
+    elif section == "Statistical Relationships":
+        # Statistical relationships analysis
+        st.markdown("### Feature Relationship Explorer")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            x_feature = st.selectbox("Select X-axis Feature", numeric_cols)
+        with col2:
+            y_feature = st.selectbox("Select Y-axis Feature", numeric_cols, index=1 if len(numeric_cols) > 1 else 0)
+        
+        if x_feature != y_feature:
+            # Calculate correlation
+            correlation = df[x_feature].corr(df[y_feature])
+            
+            # Create scatter plot with regression line
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                # Try to create scatter plot with trendline, fallback to basic plot if statsmodels not available
+                try:
+                    fig = px.scatter(
+                        df,
+                        x=x_feature,
+                        y=y_feature,
+                        color='Attrition' if 'Attrition' in df.columns else None,
+                        title=f"Relationship: {x_feature} vs {y_feature}",
+                        trendline="ols",
+                        color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
+                    )
+                except Exception as e:
+                    # Fallback to basic scatter plot without trendline
+                    st.warning("Trendline analysis requires additional packages. Showing basic scatter plot.")
+                    fig = px.scatter(
+                        df,
+                        x=x_feature,
+                        y=y_feature,
+                        color='Attrition' if 'Attrition' in df.columns else None,
+                        title=f"Relationship: {x_feature} vs {y_feature}",
+                        color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
+                    )
+                
+                fig.update_layout(height=500)
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with col2:
+                # Statistical summary
+                st.markdown(f"""
+                <div style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin: 10px 0;">
+                    <h4 style="color: #2c3e50; margin: 0 0 15px 0;">Statistical Summary</h4>
+                    <p style="margin: 5px 0; color: #34495e;"><strong>Correlation:</strong> {correlation:.3f}</p>
+                    <p style="margin: 5px 0; color: #34495e;"><strong>Relationship:</strong> {"Strong" if abs(correlation) > 0.7 else "Moderate" if abs(correlation) > 0.4 else "Weak"}</p>
+                    <p style="margin: 5px 0; color: #34495e;"><strong>Direction:</strong> {"Positive" if correlation > 0 else "Negative"}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Feature statistics
+                x_stats = df[x_feature].describe()
+                y_stats = df[y_feature].describe()
+                
+                st.markdown(f"""
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin: 10px 0;">
+                    <h5 style="color: #495057; margin: 0 0 10px 0;">{x_feature} Stats</h5>
+                    <p style="margin: 3px 0; color: #6c757d; font-size: 0.9em;">Mean: {x_stats['mean']:.2f}</p>
+                    <p style="margin: 3px 0; color: #6c757d; font-size: 0.9em;">Std: {x_stats['std']:.2f}</p>
+                    <p style="margin: 3px 0; color: #6c757d; font-size: 0.9em;">Range: {x_stats['min']:.1f} - {x_stats['max']:.1f}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.markdown(f"""
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; margin: 10px 0;">
+                    <h5 style="color: #495057; margin: 0 0 10px 0;">{y_feature} Stats</h5>
+                    <p style="margin: 3px 0; color: #6c757d; font-size: 0.9em;">Mean: {y_stats['mean']:.2f}</p>
+                    <p style="margin: 3px 0; color: #6c757d; font-size: 0.9em;">Std: {y_stats['std']:.2f}</p>
+                    <p style="margin: 3px 0; color: #6c757d; font-size: 0.9em;">Range: {y_stats['min']:.1f} - {y_stats['max']:.1f}</p>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Additional statistical insights
+        st.markdown("### Advanced Statistical Analysis")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Distribution comparison
+            st.markdown("#### Feature Distributions")
+            selected_feature = st.selectbox("Select Feature for Distribution", numeric_cols)
+            
+            if 'Attrition' in df.columns:
+                fig = px.histogram(
+                    df,
+                    x=selected_feature,
+                    color='Attrition',
+                    title=f"Distribution of {selected_feature} by Attrition",
+                    nbins=20,
+                    color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'},
+                    barmode='overlay',
+                    opacity=0.7
+                )
+            else:
+                fig = px.histogram(
+                    df,
+                    x=selected_feature,
+                    title=f"Distribution of {selected_feature}",
+                    nbins=20,
+                    color_discrete_sequence=['#3498db']
+                )
+            
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            # Box plot comparison
+            st.markdown("#### Statistical Comparison")
+            box_feature = st.selectbox("Select Feature for Box Plot", numeric_cols, key="box_feature")
+            
+            if 'Attrition' in df.columns:
+                fig = px.box(
+                    df,
+                    x='Attrition',
+                    y=box_feature,
+                    title=f"{box_feature} by Employment Status",
+                    color='Attrition',
+                    color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
+                )
+            else:
+                fig = px.box(
+                    df,
+                    y=box_feature,
+                    title=f"{box_feature} Distribution",
+                    color_discrete_sequence=['#3498db']
+                )
+            
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Statistical tests and insights
+        if 'Attrition' in df.columns:
+            st.markdown("### Key Statistical Insights")
+            
+            # Calculate means for each group
+            attrition_stats = df.groupby('Attrition')[numeric_cols].mean()
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("#### Average Values by Employment Status")
+                st.dataframe(attrition_stats.round(2), use_container_width=True)
+            
+            with col2:
+                st.markdown("#### Notable Differences")
+                differences = []
+                for col in numeric_cols:
+                    if len(df[df['Attrition'] == 'Yes']) > 0 and len(df[df['Attrition'] == 'No']) > 0:
+                        yes_mean = df[df['Attrition'] == 'Yes'][col].mean()
+                        no_mean = df[df['Attrition'] == 'No'][col].mean()
+                        diff_pct = ((yes_mean - no_mean) / no_mean * 100) if no_mean != 0 else 0
+                        
+                        if abs(diff_pct) > 10:  # Show differences > 10%
+                            differences.append({
+                                'Feature': col,
+                                'Difference': f"{diff_pct:+.1f}%",
+                                'Direction': '↑ Higher' if diff_pct > 0 else '↓ Lower'
+                            })
+                
+                if differences:
+                    diff_df = pd.DataFrame(differences)
+                    st.dataframe(diff_df, use_container_width=True)
+                else:
+                    st.info("No significant differences found (>10%)")
+        else:
+            st.info("Attrition data not available for group comparisons")
 
 def model_evaluation_report(df):
     st.markdown("""
