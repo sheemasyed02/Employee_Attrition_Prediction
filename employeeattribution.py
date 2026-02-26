@@ -13,8 +13,11 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+import warnings
+
+warnings.filterwarnings('ignore', category=RuntimeWarning)
+warnings.filterwarnings('ignore', message='divide by zero')
  
-# Page configuration
 st.set_page_config(
     page_title="Workforce Analytics Suite", 
     layout="wide",
@@ -238,7 +241,7 @@ def executive_summary_report(df):
             )
             
             fig.update_layout(height=400, font=dict(size=12))
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         with col2:
             st.subheader("Age Distribution Trends")
@@ -253,7 +256,7 @@ def executive_summary_report(df):
             )
             
             fig.update_layout(height=400, font=dict(size=12))
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
     
     with tab3:
         col1, col2 = st.columns([1, 1])
@@ -271,8 +274,8 @@ def executive_summary_report(df):
             """, unsafe_allow_html=True)
             
             if 'Department' in df_clean.columns:
-                worst_dept = df_clean.groupby('Department')['Attrition'].apply(lambda x: (x == 'Yes').mean()).idxmax()
-                worst_rate = df_clean.groupby('Department')['Attrition'].apply(lambda x: (x == 'Yes').mean()).max() * 100
+                worst_dept = df_clean.groupby('Department', observed=True)['Attrition'].apply(lambda x: (x == 'Yes').mean()).idxmax()
+                worst_rate = df_clean.groupby('Department', observed=True)['Attrition'].apply(lambda x: (x == 'Yes').mean()).max() * 100
                 
                 st.markdown(f"""
                 <div style="background: #ffffff; padding: 18px; border-radius: 8px; border: 1px solid #dee2e6; margin: 8px 0; border-left: 4px solid #ffc107;">
@@ -357,7 +360,7 @@ def department_breakdown_analysis(df):
                     color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
                 )
                 fig.update_layout(height=250, showlegend=False)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
             
             with col_right:
                 if 'JobRole' in dept_data.columns:
@@ -368,7 +371,7 @@ def department_breakdown_analysis(df):
                         title=f"{dept} - Job Roles"
                     )
                     fig.update_layout(height=250)
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width='stretch')
     
     st.markdown("### Department Comparison Overview")
     
@@ -387,7 +390,7 @@ def department_breakdown_analysis(df):
     
     st.dataframe(
         dept_df.style.background_gradient(subset=['Turnover Rate (%)']),
-        use_container_width=True
+        width='stretch'
     )
     df_clean = df.copy()
     df_clean['Attrition'] = df_clean['Attrition'].str.upper()
@@ -408,7 +411,7 @@ def department_breakdown_analysis(df):
         show_data = st.checkbox("Show Complete Dataset")
         if show_data:
             st.subheader("Employee Dataset")
-            st.dataframe(df_clean, use_container_width=True, height=400)
+            st.dataframe(df_clean, width='stretch', height=400)
     
     with col2:
         st.markdown(f"""
@@ -482,7 +485,7 @@ def department_breakdown_analysis(df):
                 )
         
         fig.update_layout(height=400, font=dict(size=12))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
@@ -585,7 +588,7 @@ def statistical_analysis_module(df):
             font=dict(size=12)
         )
         
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
@@ -605,7 +608,7 @@ def statistical_analysis_module(df):
         )
         
         fig.update_layout(height=400, font=dict(size=12))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         st.markdown('</div>', unsafe_allow_html=True)
 
 def correlation_analysis_module(df):
@@ -640,7 +643,7 @@ def correlation_analysis_module(df):
     )
     
     fig.update_layout(height=600, font=dict(size=12))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
     st.markdown('</div>', unsafe_allow_html=True)
 
 def ml_performance_analysis(df):
@@ -672,7 +675,7 @@ def ml_performance_analysis(df):
         # Initialize models
         models = {
             'Random Forest': RandomForestClassifier(n_estimators=100, random_state=42),
-            'Logistic Regression': LogisticRegression(random_state=42, max_iter=1000),
+            'Logistic Regression': LogisticRegression(random_state=42, solver='liblinear'),
             'Gradient Boosting': GradientBoostingClassifier(n_estimators=100, random_state=42)
         }
         
@@ -718,7 +721,7 @@ def ml_performance_analysis(df):
         # Display comparison table
         st.markdown('<div class="visualization-frame">', unsafe_allow_html=True)
         st.subheader("Performance Metrics Comparison")
-        st.dataframe(comparison_df, use_container_width=True)
+        st.dataframe(comparison_df, width='stretch')
         st.markdown('</div>', unsafe_allow_html=True)
         
         # Visualize model comparison
@@ -734,7 +737,7 @@ def ml_performance_analysis(df):
                 color_discrete_sequence=['#3498db', '#e74c3c', '#f39c12', '#27ae60']
             )
             fig.update_layout(height=400, font=dict(size=12))
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
             st.markdown('</div>', unsafe_allow_html=True)
         
         with col2:
@@ -747,7 +750,7 @@ def ml_performance_analysis(df):
                 color_discrete_sequence=['#9b59b6']
             )
             fig.update_layout(height=400, font=dict(size=12))
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
             st.markdown('</div>', unsafe_allow_html=True)
         
         # Feature Importance Analysis
@@ -773,7 +776,7 @@ def ml_performance_analysis(df):
                     color_discrete_sequence=['#3498db']
                 )
                 fig.update_layout(height=500, font=dict(size=12))
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
                 st.markdown('</div>', unsafe_allow_html=True)
             
             with col2:
@@ -878,7 +881,7 @@ def employee_risk_prediction(df):
     
     with col1:
         age = st.number_input("Age", min_value=18, max_value=70, value=30)
-        monthly_income = st.number_input("Monthly Income", min_value=1000, max_value=20000, value=5000)
+        monthly_income = st.number_input("Monthly Income", min_value=1000, max_value=500000, value=5000)
         years_at_company = st.number_input("Years at Company", min_value=0, max_value=40, value=5)
     
     with col2:
@@ -1013,10 +1016,10 @@ def employee_records_viewer(df):
                 else:
                     return 'background-color: #e8f5e8; color: #388e3c; font-weight: bold;'
             
-            styled_df = display_df.style.applymap(color_attrition, subset=['Attrition'])
-            st.dataframe(styled_df, use_container_width=True, height=400)
+            styled_df = display_df.style.map(color_attrition, subset=['Attrition'])
+            st.dataframe(styled_df, width='stretch', height=400)
         else:
-            st.dataframe(display_df, use_container_width=True, height=400)
+            st.dataframe(display_df, width='stretch', height=400)
         
         # Download option
         csv = display_df.to_csv(index=False)
@@ -1050,12 +1053,12 @@ def demographic_insights_analysis(df):
                 barmode='overlay'
             )
             fig.update_layout(height=400)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         with col2:
             # Age group analysis
             df['AgeGroup'] = pd.cut(df['Age'], bins=[0, 30, 40, 50, 100], labels=['Under 30', '30-39', '40-49', '50+'])
-            age_attrition = df.groupby('AgeGroup')['Attrition'].apply(lambda x: (x == 'Yes').mean() * 100)
+            age_attrition = df.groupby('AgeGroup', observed=True)['Attrition'].apply(lambda x: (x == 'Yes').mean() * 100)
             
             st.markdown("### Turnover by Age Group")
             for age_group, rate in age_attrition.items():
@@ -1072,7 +1075,7 @@ def demographic_insights_analysis(df):
                 title='Experience vs Age',
                 color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         with col2:
             fig = px.box(
@@ -1083,7 +1086,7 @@ def demographic_insights_analysis(df):
                 color='Attrition',
                 color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
     
     with tab3:
         if 'MonthlyIncome' in df.columns:
@@ -1097,10 +1100,10 @@ def demographic_insights_analysis(df):
                     nbins=20,
                     color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
             
             with col2:
-                income_stats = df.groupby('Attrition')['MonthlyIncome'].agg(['mean', 'median'])
+                income_stats = df.groupby('Attrition', observed=True)['MonthlyIncome'].agg(['mean', 'median'])
                 st.markdown("### Income Statistics")
                 st.dataframe(income_stats)
 
@@ -1130,7 +1133,7 @@ def pattern_discovery_analysis(df):
             aspect="auto"
         )
         fig.update_layout(height=600)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         
         st.markdown("### Strong Correlations (>0.5)")
         strong_corr = []
@@ -1170,7 +1173,7 @@ def pattern_discovery_analysis(df):
                 y=pca.explained_variance_ratio_,
                 title="Variance Explained by Components"
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         with col2:
             # 2D scatter plot
@@ -1181,7 +1184,7 @@ def pattern_discovery_analysis(df):
                 title="First Two Principal Components",
                 color_discrete_map={'No': '#27ae60', 'Yes': '#e74c3c'}
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
     
     elif section == "Statistical Relationships":
         # Statistical relationships analysis
@@ -1222,7 +1225,7 @@ def pattern_discovery_analysis(df):
                     )
                 
                 fig.update_layout(height=500)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
             
             with col2:
                 st.markdown(f"""
@@ -1285,7 +1288,7 @@ def pattern_discovery_analysis(df):
                 )
             
             fig.update_layout(height=400)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         with col2:
             st.markdown("#### Statistical Comparison")
@@ -1309,19 +1312,19 @@ def pattern_discovery_analysis(df):
                 )
             
             fig.update_layout(height=400)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         # Statistical tests and insights
         if 'Attrition' in df.columns:
             st.markdown("### Key Statistical Insights")
             
-            attrition_stats = df.groupby('Attrition')[numeric_cols].mean()
+            attrition_stats = df.groupby('Attrition', observed=True)[numeric_cols].mean()
             
             col1, col2 = st.columns(2)
             
             with col1:
                 st.markdown("#### Average Values by Employment Status")
-                st.dataframe(attrition_stats.round(2), use_container_width=True)
+                st.dataframe(attrition_stats.round(2), width='stretch')
             
             with col2:
                 st.markdown("#### Notable Differences")
@@ -1341,7 +1344,7 @@ def pattern_discovery_analysis(df):
                 
                 if differences:
                     diff_df = pd.DataFrame(differences)
-                    st.dataframe(diff_df, use_container_width=True)
+                    st.dataframe(diff_df, width='stretch')
                 else:
                     st.info("No significant differences found (>10%)")
         else:
@@ -1369,7 +1372,7 @@ def model_evaluation_report(df):
         
         models = {
             'Random Forest': RandomForestClassifier(n_estimators=100, random_state=42),
-            'Logistic Regression': LogisticRegression(random_state=42, max_iter=1000),
+            'Logistic Regression': LogisticRegression(random_state=42, solver='liblinear'),
             'Gradient Boosting': GradientBoostingClassifier(n_estimators=100, random_state=42)
         }
         
@@ -1408,7 +1411,7 @@ def model_evaluation_report(df):
         
         st.markdown("### Model Performance Comparison")
         results_df = pd.DataFrame(results)
-        st.dataframe(results_df, use_container_width=True)
+        st.dataframe(results_df, width='stretch')
         
         if feature_importance_rf is not None:
             st.markdown("### Feature Importance (Random Forest)")
@@ -1426,7 +1429,7 @@ def model_evaluation_report(df):
                 title="Top 10 Important Features"
             )
             fig.update_layout(height=500)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
 def individual_risk_calculator(df):
     st.markdown("""
@@ -1444,7 +1447,7 @@ def individual_risk_calculator(df):
         
         with col1:
             age = st.number_input("Employee Age", min_value=18, max_value=70, value=30)
-            monthly_income = st.number_input("Monthly Income ($)", min_value=1000, max_value=50000, value=5000)
+            monthly_income = st.number_input("Monthly Income ($)", min_value=1000, max_value=500000, value=5000)
             years_at_company = st.number_input("Years at Company", min_value=0, max_value=40, value=5)
         
         with col2:
@@ -1453,7 +1456,7 @@ def individual_risk_calculator(df):
             overtime = st.selectbox("Works Overtime", ["No", "Yes"])
         
         st.markdown("**Step 2: Calculate Risk**")
-        submitted = st.form_submit_button("Calculate Turnover Risk", use_container_width=True)
+        submitted = st.form_submit_button("Calculate Turnover Risk", width='stretch')
         
         if submitted:
             risk_factors = []
